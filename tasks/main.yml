@@ -1,0 +1,23 @@
+---
+
+- name: Install gdnsd packages
+  apt:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ gdnsd__packages }}'
+
+- name: gdnsd configuration
+  template:
+    src: 'etc/gdnsd/gdnsd.config.j2'
+    dest: '/etc/gdnsd/gdnsd.config'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  notify:
+    - Restart gdnsd
+
+- name: Enable and start service
+  service:
+    name: 'gdnsd'
+    enabled: True
+    state: started

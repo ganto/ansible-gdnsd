@@ -1,0 +1,26 @@
+---
+# .. vim: foldmarker=[[[,]]]:foldmethod=marker
+
+# Default variables
+# =================
+
+# .. contents:: Sections
+#    :local:
+#
+# .. Basic options [[[
+
+# -----------------
+#   Basic options
+# -----------------
+
+# .. envvar:: gdnsd__packages
+#
+# gdnsd packages to install.
+gdnsd__packages: [ 'gdnsd' ]
+
+
+# .. envvar:: gdsnd__listen
+#
+# List of local IP addresses (and ports) where gdsnd should listen for DNS
+# requests. If emtpy, it will listen on all interfaces on port 53.
+gdnsd__listen: []

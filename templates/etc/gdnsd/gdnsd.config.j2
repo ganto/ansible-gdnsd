@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+{% if gdnsd__listen|d([]) %}
+options => {
+{%   if gdnsd__listen|d([]) %}
+    listen => [ {{ gdnsd__listen | join(" ") }} ]
+{%   endif %}
+}
+{% endif %}

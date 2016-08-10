@@ -1,0 +1,6 @@
+---
+
+- name: Restart gdnsd
+  service:
+    name: 'gdnsd'
+    state: restarted
