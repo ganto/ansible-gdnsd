@@ -1,0 +1,3 @@
+$TTL {{ item.ttl|d(gdnsd__ttl) }}
+
+{{ item.domain }}. IN SOA {{ item.nameserver|d('ns1.' + item.domain) }}. {{ item.mailbox|d(gdnsd__mailbox) + '.' + item.domain }}. ( {{ item.serial|d(1) }} {{ item.refresh|d(gdnsd__refresh) }} {{ item.retry|d(gdnsd__retry) }} {{ item.expire|d(gdnsd__expire) }} {{ item.ncache|d(gdnsd__ncache) }} )

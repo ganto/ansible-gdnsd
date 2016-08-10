@@ -21,3 +21,12 @@
     name: 'gdnsd'
     enabled: True
     state: started
+
+- name: Generate zone files
+  template:
+    src: 'etc/gdnsd/zones/zone.j2'
+    dest: '/etc/gdnsd/zones/{{ item.domain }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  with_items: '{{ gdnsd__zones }}'

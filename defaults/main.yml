@@ -24,3 +24,50 @@ gdnsd__packages: [ 'gdnsd' ]
 # List of local IP addresses (and ports) where gdsnd should listen for DNS
 # requests. If emtpy, it will listen on all interfaces on port 53.
 gdnsd__listen: []
+
+
+# ----------------------
+#   Zone configuration
+# ----------------------
+
+# .. envvar:: gdnsd__zones
+#
+# List of DNS zones.
+gdnsd__zones: []
+
+
+# .. envvar:: gdnsd__ttl
+#
+# Default TTL for zone entries.
+gdnsd__ttl: 86400
+
+
+# .. envvar:: gdnsd__mailbox
+#
+# Mailbox name of the person responsible for this zone.
+gdnsd__mailbox: 'hostmaster'
+
+
+# .. envvar:: gdnsd__refresh
+#
+# Time interval before the zone should be refreshed.
+gdnsd__refresh: '3h'
+
+
+# .. envvar:: gdnsd__retry
+#
+# Time interval that should elapse before a failed refresh should be retried.
+gdnsd__retry: '1h'
+
+
+# .. envvar:: gdnsd__expire
+#
+# Time interval that specifies the upper limit on the time interval that can
+# elapse before the zone is no longer authoritative.
+gdnsd__expire: '1w'
+
+
+# .. envvar:: gdnsd__ncache
+#
+# Negative caching TTL.
+gdnsd__ncache: '1h'
