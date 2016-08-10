@@ -13,6 +13,6 @@ galaxy_info:
       versions:
         - jessie
 
-  galaxy_tags: []
+  galaxy_tags:
     - gdnsd
     - dns
