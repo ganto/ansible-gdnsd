@@ -24,7 +24,7 @@
 
 - name: Generate zone files
   template:
-    src: 'etc/gdnsd/zones/zone.j2'
+    src: 'etc/gdnsd/zones/forward_zone.j2'
     dest: '/etc/gdnsd/zones/{{ item.domain }}'
     owner: 'root'
     group: 'root'
