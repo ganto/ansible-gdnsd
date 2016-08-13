@@ -1,0 +1,9 @@
+---
+
+- name: Manage gdnsd authoritative DNS servers
+  hosts: gdnsd_service
+  become: True
+
+  roles:
+    - role: ganto.gdnsd
+      tags: [ 'role::gdnsd' ]

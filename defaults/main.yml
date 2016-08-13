@@ -32,7 +32,7 @@ gdnsd__listen: []
 
 # .. envvar:: gdnsd__zones
 #
-# List of DNS zones.
+# List of DNS zones. For a detailed explanation see :ref:`gdnsd__ref_zones`.
 gdnsd__zones: []
 
 
@@ -62,12 +62,12 @@ gdnsd__retry: '1h'
 
 # .. envvar:: gdnsd__expire
 #
-# Time interval that specifies the upper limit on the time interval that can
-# elapse before the zone is no longer authoritative.
+# Specifies how long zone data is considered valid in case the zone cannot
+# be refreshed from the primary name server.
 gdnsd__expire: '1w'
 
 
 # .. envvar:: gdnsd__ncache
 #
 # Negative caching TTL.
-gdnsd__ncache: '1h'
+gdnsd__negative_cache: '1h'
