@@ -1,15 +1,19 @@
 $TTL {{ item.ttl|d(gdnsd__ttl) }}
 
-{{ item.domain }}. IN SOA {{ item.primary_nameserver|d(ansible_fqdn + '.' + item.domain) }}. {{ item.mailbox|d(gdnsd__mailbox) + '.' + item.domain }}. ( {{ item.serial|d(1) }} {{ item.refresh|d(gdnsd__refresh) }} {{ item.retry|d(gdnsd__retry) }} {{ item.expire|d(gdnsd__expire) }} {{ item.ncache|d(gdnsd__ncache) }} )
+{{ item.domain }}. IN SOA {{ item.primary_nameserver|d(ansible_hostname + '.' + item.domain) }}. {{ item.mailbox|d(gdnsd__mailbox) + '.' + item.domain }}. ( {{ item.serial|d(1) }} {{ item.refresh|d(gdnsd__refresh) }} {{ item.retry|d(gdnsd__retry) }} {{ item.expire|d(gdnsd__expire) }} {{ item.negative_cache|d(gdnsd__negative_cache) }} )
 
 {% if item.nameservers|d([]) %}
 {%   for _ns in item.nameservers %}
 @   IN NS  {{ _ns }}.
 {%   endfor %}
 {% else %}
-@   IN NS  {{ item.primary_nameserver|d(ansible_fqdn + '.' + item.domain) }}.
+@   IN NS  {{ item.primary_nameserver|d(ansible_hostname + '.' + item.domain) }}.
 {% endif %}
 
-{% for _entry in item.records %}
-{{ _entry.name }} IN {{ _entry.type|d('A') }} {{ _entry.value }}
-{% endfor %}
+{% if 'records' in item %}
+{%   for _entry in item.records %}
+{{ _entry.name }} IN {{ _entry.type|d('A') }} {{ _entry.rdata }}
+{%   endfor %}
+{% else %}
+{{ ansible_hostname }} IN A {{ ansible_default_ipv4.address }}
+{% endif %}
