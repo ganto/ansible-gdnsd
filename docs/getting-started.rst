@@ -4,6 +4,15 @@ Getting started
 .. contents::
    :local:
 
+DNS zone configuration
+----------------------
+
+By default the role will create a forward and reverse zone defining the host
+as primary name server and add a ``A`` and ``PTR`` record for the host to the
+zone files. This configuration can be overwritten by defining
+:envvar:`gdnsd__zones`.
+
+
 Example inventory
 -----------------
 
