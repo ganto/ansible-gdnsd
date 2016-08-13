@@ -20,7 +20,14 @@ This list is used to configure the DNS zones which are served by
 YAML dictionary with the following parameters:
 
 ``domain``
-  Required. Domain name of the DNS zone.
+  Domain name of the DNS zone. Required, if this is a forward zone.
+
+``reverse_zone``
+  Optional. Set this to ``True`` to mark zone entry as reverse zone. Defaults
+  to ``False``.
+
+``reverse_network``
+  Network definition for reverse zone. Required, if this is a reverse zone.
 
 ``primary_nameserver``
   Optional. DNS name of the primary name server for this zone which is added
@@ -66,3 +73,7 @@ YAML dictionary with the following parameters:
   ``rdata``
     Required. Resource data which is served when querying the record.
     Depending on the record type this is e.g. a host address.
+
+  ``do_reverse``
+    Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
+    record.

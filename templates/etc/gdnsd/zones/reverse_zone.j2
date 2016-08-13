@@ -1,0 +1,24 @@
+$TTL {{ item.ttl|d(gdnsd__ttl) }}
+
+{{ item.reverse_zone }}. IN SOA {{ item.primary_nameserver|d(ansible_fqdn) }}. {{ item.mailbox|d(gdnsd__mailbox) + '.' + ansible_domain }}. ( {{ item.serial|d(1) }} {{ item.refresh|d(gdnsd__refresh) }} {{ item.retry|d(gdnsd__retry) }} {{ item.expire|d(gdnsd__expire) }} {{ item.negative_cache|d(gdnsd__negative_cache) }} )
+
+{% if item.nameservers|d([]) %}
+{%   for _ns in item.nameservers %}
+@   IN NS  {{ _ns }}.
+{%   endfor %}
+{% else %}
+@   IN NS  {{ item.primary_nameserver|d(ansible_fqdn) }}.
+{% endif %}
+
+{% if 'records' in item %}
+{%   for _entry in item.records %}
+{%     if (("type" in _entry and _entry.type == "A") or
+           (not "type" in _entry)) and
+          (("do_reverse" in _entry and _entry.do_reverse) or
+           ("reverse_zone" in item and item.reverse_zone)) %}
+{{ _entry.rdata.split(".")[3] }}.{{ item.reverse_zone }}. IN PTR {{ _entry.name }}.
+{%     endif %}
+{%   endfor %}
+{% else %}
+{{ ansible_default_ipv4.address.split(".")[3] }}.{{ item.reverse_zone }}. IN PTR {{ ansible_fqdn }}.
+{% endif %}

@@ -71,3 +71,17 @@ gdnsd__expire: '1w'
 #
 # Negative caching TTL.
 gdnsd__negative_cache: '1h'
+
+
+# .. envvar:: gdnsd__reverse_zone
+#
+# Support reverse zones. Set this to ``False`` in case reverse name lookup
+# should not be supported.
+gdnsd__reverse_zones: True
+
+
+# .. envvar:: gdnsd__default_reverse_zone:
+#
+# Default reverse zone. This value is used in case `network` is not specified in the
+# zone definition and :envvar:`gdnsd__reverse_zones` is enabled.
+gdnsd__default_reverse_zone: '{{ ansible_default_ipv4.network.split(".")[:3] | reverse | join(".") }}.in-addr.arpa'

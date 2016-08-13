@@ -22,13 +22,29 @@
     enabled: True
     state: started
 
-- name: Generate zone files
+- name: Generate forward zones
   template:
     src: 'etc/gdnsd/zones/forward_zone.j2'
     dest: '/etc/gdnsd/zones/{{ item.domain }}'
     owner: 'root'
     group: 'root'
     mode: '0644'
+  when: (not "reverse_zone" in item) or
+        (not item.reverse_zone)
   with_items: '{{ gdnsd__zones
                   if (gdnsd__zones|d([]) | length) > 0
                   else [ {"domain": ansible_domain} ] }}'
+
+- name: Generate reverse zones
+  template:
+    src: 'etc/gdnsd/zones/reverse_zone.j2'
+    dest: '/etc/gdnsd/zones/{{ gdnsd__default_reverse_zone
+                               if (not "reverse_zone" in item)
+                               else item.reverse_zone }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  when: gdnsd__reverse_zones|d(True)
+  with_items: '{{ gdnsd__zones
+                  if (gdnsd__zones|d([]) | length) > 0
+                  else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
