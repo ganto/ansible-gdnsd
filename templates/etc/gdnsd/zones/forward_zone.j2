@@ -1,19 +1,60 @@
-$TTL {{ item.ttl|d(gdnsd__ttl) }}
-
-{{ item.domain }}. IN SOA {{ item.primary_nameserver|d(ansible_hostname + '.' + item.domain) }}. {{ item.mailbox|d(gdnsd__mailbox) + '.' + item.domain }}. ( {{ item.serial|d(1) }} {{ item.refresh|d(gdnsd__refresh) }} {{ item.retry|d(gdnsd__retry) }} {{ item.expire|d(gdnsd__expire) }} {{ item.negative_cache|d(gdnsd__negative_cache) }} )
-
+{#
+ #  First create a dict holding the entire zone information and create a hash
+ #  from it, that it can be compared with subsequent task executions. In this
+ #  way the serial will only be updated if there are some content changes.
+ #}
+{% set _zone_data = {} %}
+{% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
+{% set _ = _zone_data.update({'domain': item.domain}) %}
+{% set _ = _zone_data.update({'ns': item.primary_nameserver|d(ansible_hostname + '.' + item.domain )}) %}
+{% set _ = _zone_data.update({'mailbox': item.mailbox|d(gdnsd__mailbox)}) %}
+{% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
+{% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
+{% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
+{% set _ = _zone_data.update({'negative_cache': item.negative_cache|d(gdnsd__negative_cache)}) %}
+{% set _ = _zone_data.update({'nameservers': []}) %}
 {% if item.nameservers|d([]) %}
-{%   for _ns in item.nameservers %}
-@   IN NS  {{ _ns }}.
-{%   endfor %}
+{%   set _ = _zone_data['nameservers'].extend(item.nameservers) %}
 {% else %}
-@   IN NS  {{ item.primary_nameserver|d(ansible_hostname + '.' + item.domain) }}.
+{%   set _ = _zone_data['nameservers'].append(item.primary_nameserver|d(ansible_hostname + '.' + item.domain)) %}
 {% endif %}
-
+{% set _ = _zone_data.update({'records': []}) %}
 {% if 'records' in item %}
 {%   for _entry in item.records %}
-{{ _entry.name }} IN {{ _entry.type|d('A') }} {{ _entry.rdata }}
+{%     set _ = _zone_data['records'].append({'name': _entry.name, 'type': _entry.type|d('A'), 'rdata': _entry.rdata}) %}
 {%   endfor %}
 {% else %}
-{{ ansible_hostname }} IN A {{ ansible_default_ipv4.address }}
+{%   set _ = _zone_data['records'].append({'name': ansible_hostname, 'type': 'A', 'rdata': ansible_default_ipv4.address}) %}
 {% endif %}
+{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
+{#
+ #  Compare the zone file hash with the current zone data hash and set serial
+ #  accordingly
+ #}
+{% for _result in gdnsd__register_forward_hashes.results %}
+{%   if _result.item.domain == _zone_data['domain'] %}
+{%     set _hash_serial = _result.stdout.split(' ')[2:] %}
+{%     if _hash_serial and _hash_serial[0] == _zone['hash'] %}
+{%       set _ = _zone.update({'serial': _hash_serial[1]}) %}
+{%     else %}
+{%       set _ = _zone.update({'serial': ansible_date_time.epoch}) %}
+{%     endif %}
+{%   endif %}
+{% endfor %}
+{#
+ #  Eventually output the zone data
+ #}
+# {{ ansible_managed }}
+# Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
+
+$TTL {{ _zone_data['ttl'] }}
+
+{{ _zone_data['domain'] }}. IN SOA {{ _zone_data['ns'] }}. {{ _zone_data['mailbox'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['negative_cache'] }} )
+
+{% for _ns in _zone_data['nameservers'] %}
+@   IN NS  {{ _ns }}.
+{% endfor %}
+
+{% for _record in _zone_data['records'] %}
+{{   _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}
+{% endfor %}
