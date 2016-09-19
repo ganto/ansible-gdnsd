@@ -7,7 +7,7 @@ redirection, wighting and service-state-conscious failover at the DNS layer.
 
 The ``ganto.gdnsd`` Ansible role installs and configures the name service and
 is able to generate zone files from name records defined in the Ansible
-inventory.
+inventory and properly increase the serial on zone updates.
 
 Installation
 ~~~~~~~~~~~~
