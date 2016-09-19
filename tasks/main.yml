@@ -17,7 +17,7 @@
     - Restart gdnsd
 
 - name: Read forward zone hashes
-  shell: 'grep "^# Hash:" /etc/gdnsd/zones/{{ item.domain }} || true'
+  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ item.domain }} || true'
   changed_when: False
   always_run: True
   register: gdnsd__register_forward_hashes
@@ -41,7 +41,7 @@
                   else [ {"domain": ansible_domain} ] }}'
 
 - name: Read reverse zone hashes
-  shell: 'grep "^# Hash:" /etc/gdnsd/zones/{{ gdnsd__default_reverse_zone
+  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__default_reverse_zone
                                               if (not "reverse_zone" in item)
                                               else item.reverse_zone }} || true'
   changed_when: False

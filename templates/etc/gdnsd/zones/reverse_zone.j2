@@ -49,8 +49,8 @@
 {#
  #  Eventually output the zone data
  #}
-# {{ ansible_managed }}
-# Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
+; {{ ansible_managed }}
+; Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
 
 $TTL {{ _zone_data['ttl'] }}
 
