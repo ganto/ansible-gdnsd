@@ -15,11 +15,12 @@
 {% set _ = _zone_data.update({'negative_cache': item.negative_cache|d(gdnsd__negative_cache)}) %}
 {% set _ = _zone_data.update({'nameservers': []}) %}
 {% if item.nameservers|d([]) %}
-{%   set _ = _zone_data['nameservers'].extend(item.nameservers) %}
+{%   for _ns in item.nameservers %}
+{%     set _ = _zone_data['nameservers'].append(_ns + ('' if (_ns | search('\.')) else ('.' + _zone_data['domain']))) %}
+{%   endfor %}
 {% else %}
-{%   set _ = _zone_data['nameservers'].append(item.primary_nameserver|d(ansible_fqdn)) %}
+{%   set _ = _zone_data['nameservers'].append(_zone_data['ns']) %}
 {% endif %}
-{% set _ = _zone_data.update({'records': []}) %}
 {#
  #  Get the network part of the reverse zone to adjust the host records.
  #}
@@ -27,6 +28,7 @@
 {#
  #  Only create reverse entries if this is a reverse zone.
  #}
+{% set _ = _zone_data.update({'records': []}) %}
 {% if ('records' in item) and
       (('reverse_zone' in item and item.reverse_zone) or (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone)) %}
 {%   for _entry in item.records %}

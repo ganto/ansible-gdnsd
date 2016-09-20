@@ -31,7 +31,7 @@ YAML dictionary with the following parameters:
 
 ``primary_nameserver``
   Optional. DNS name of the primary name server for this zone which is added
-  to the zone's SOA record. Defaults to the FQDN of the host where
+  to the zone's SOA record. Must be a FQDN. Defaults to the host name where
   :program:`gdnsd` is installed.
 
 ``mailbox``

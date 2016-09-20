@@ -16,7 +16,7 @@
 {% if item.nameservers|d([]) %}
 {%   set _ = _zone_data['nameservers'].extend(item.nameservers) %}
 {% else %}
-{%   set _ = _zone_data['nameservers'].append(item.primary_nameserver|d(ansible_hostname + '.' + item.domain)) %}
+{%   set _ = _zone_data['nameservers'].append(_zone_data['ns']) %}
 {% endif %}
 {% set _ = _zone_data.update({'records': []}) %}
 {% if 'records' in item %}
@@ -26,11 +26,11 @@
 {% else %}
 {%   set _ = _zone_data['records'].append({'name': ansible_hostname, 'type': 'A', 'rdata': ansible_default_ipv4.address}) %}
 {% endif %}
-{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
 {#
  #  Compare the zone file hash with the current zone data hash and set serial
  #  accordingly
  #}
+{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
 {% for _result in gdnsd__register_forward_hashes.results %}
 {%   if _result.item.domain == _zone_data['domain'] %}
 {%     set _hash_serial = _result.stdout.split(' ')[2:] %}
@@ -44,7 +44,6 @@
 {#
  #  Eventually output the zone data
  #}
-; {{ ansible_managed }}
 ; Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
 
 $TTL {{ _zone_data['ttl'] }}
@@ -52,7 +51,7 @@ $TTL {{ _zone_data['ttl'] }}
 {{ _zone_data['domain'] }}. IN SOA {{ _zone_data['ns'] }}. {{ _zone_data['mailbox'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['negative_cache'] }} )
 
 {% for _ns in _zone_data['nameservers'] %}
-@   IN NS  {{ _ns }}.
+@   IN NS  {{ _ns }}{{ '.' if (_ns | search('\.')) else '' }}
 {% endfor %}
 
 {% for _record in _zone_data['records'] %}
