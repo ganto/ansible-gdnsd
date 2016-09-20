@@ -5,7 +5,8 @@
  #}
 {% set _zone_data = {} %}
 {% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
-{% set _ = _zone_data.update({'reverse_zone': item.reverse_zone}) %}
+{% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
+{% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
 {% set _ = _zone_data.update({'ns': item.primary_nameserver|d(ansible_fqdn)}) %}
 {% set _ = _zone_data.update({'mailbox': item.mailbox|d(gdnsd__mailbox)}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
@@ -19,25 +20,46 @@
 {%   set _ = _zone_data['nameservers'].append(item.primary_nameserver|d(ansible_fqdn)) %}
 {% endif %}
 {% set _ = _zone_data.update({'records': []}) %}
-{% if 'records' in item %}
+{#
+ #  Get the network part of the reverse zone to adjust the host records.
+ #}
+{% set _net_tuples = _zone_data['reverse_zone'].replace('.in-addr.arpa', '').split('.') | length %}
+{#
+ #  Only create reverse entries if this is a reverse zone.
+ #}
+{% if ('records' in item) and
+      (('reverse_zone' in item and item.reverse_zone) or (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone)) %}
 {%   for _entry in item.records %}
-{%     if (("type" in _entry and _entry.type == "A") or
-           (not "type" in _entry)) and
-          (("do_reverse" in _entry and _entry.do_reverse) or
-           ("reverse_zone" in item and item.reverse_zone)) %}
-{%       set _ = _zone_data['records'].append({'name': _entry.rdata.split(".")[3] + '.' + item.reverse_zone, 'ptrdname': _entry.name}) %}
+{#
+ #  Add a PTR entry if record type is 'A' and `item.do_reverse` is not False.
+ #}
+{%     if (('type' in _entry and _entry.type == 'A') or (not 'type' in _entry)) and
+          (('do_reverse' in _entry and _entry.do_reverse) or (not 'do_reverse' in _entry)) %}
+{%       if _net_tuples < 3 %}
+{%         set _ = _zone_data['records'].append({'name': _entry.rdata.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%       else %}
+{%         set _ = _zone_data['records'].append({'name': _entry.rdata.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%       endif %}
 {%     endif %}
 {%   endfor %}
 {% else %}
-{%   set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split(".")[3] + '.' + item.reverse_zone, 'ptrdname': ansible_fqdn }) %}
+{#
+ #  If no host records are defined, at least add ourself as a PTR record.
+ #}
+{%   if _net_tuples < 3 %}
+{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': ansible_fqdn }) %}
+{%   else %}
+{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[3], 'ptrdname': ansible_fqdn }) %}
+{%   endif %}
 {% endif %}
-{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
 {#
  #  Compare the zone file hash with the current zone data hash and set serial
  #  accordingly
  #}
+{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
 {% for _result in gdnsd__register_reverse_hashes.results %}
-{%   if _result.item.reverse_zone == _zone_data['reverse_zone'] %}
+{%   if ('reverse_zone' in _result.item and (_result.item.reverse_zone == _zone_data['reverse_zone'])) or
+        (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone) %}
 {%     set _hash_serial = _result.stdout.split(' ')[2:] %}
 {%     if _hash_serial and _hash_serial[0] == _zone['hash'] %}
 {%       set _ = _zone.update({'serial': _hash_serial[1]}) %}
@@ -49,7 +71,6 @@
 {#
  #  Eventually output the zone data
  #}
-; {{ ansible_managed }}
 ; Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
 
 $TTL {{ _zone_data['ttl'] }}
@@ -61,5 +82,5 @@ $TTL {{ _zone_data['ttl'] }}
 {% endfor %}
 
 {% for _record in _zone_data['records'] %}
-{{   _record['name'] }}. IN PTR {{ _record['ptrdname'] }}
+{{   _record['name'] }} IN PTR {{ _record['ptrdname'] }}.
 {% endfor %}
