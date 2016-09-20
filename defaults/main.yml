@@ -67,13 +67,13 @@ gdnsd__retry: '1h'
 gdnsd__expire: '1w'
 
 
-# .. envvar:: gdnsd__ncache
+# .. envvar:: gdnsd__negative_cache
 #
 # Negative caching TTL.
 gdnsd__negative_cache: '1h'
 
 
-# .. envvar:: gdnsd__reverse_zone
+# .. envvar:: gdnsd__reverse_zones
 #
 # Support reverse zones. Set this to ``False`` in case reverse name lookup
 # should not be supported.

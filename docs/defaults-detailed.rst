@@ -40,19 +40,19 @@ YAML dictionary with the following parameters:
 
 ``refresh``
   Optional. Time interval before the zone should be refreshed. Defaults to
-  :env:`gdnsd__refresh`.
+  :envvar:`gdnsd__refresh`.
 
 ``retry``
   Optional. Time interval that should elapse before a failed refresh should
-  be retried. Defaults to :env:`gdnsd__retry`.
+  be retried. Defaults to :envvar:`gdnsd__retry`.
 
 ``expire``
   Optional. Specifies how long zone data is considered valid in case the zone
   cannot be refreshed from the primary name server. Defaults to
-  :env:`gdnsd__expire`.
+  :envvar:`gdnsd__expire`.
 
 ``negative_cache``
-  Optional. Negative caching TTL. Defaults to :env:`gdnsd__negative_cache`.
+  Optional. Negative caching TTL. Defaults to :envvar:`gdnsd__negative_cache`.
 
 ``nameservers``
   Optional. List of authoritative name servers for this zone. For each entry
