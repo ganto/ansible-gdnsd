@@ -6,17 +6,17 @@
 {% set _zone_data = {} %}
 {% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
 {% set _ = _zone_data.update({'domain': item.domain}) %}
-{% set _ = _zone_data.update({'ns': item.primary_nameserver|d(ansible_hostname + '.' + item.domain )}) %}
-{% set _ = _zone_data.update({'mailbox': item.mailbox|d(gdnsd__mailbox)}) %}
+{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + item.domain )}) %}
+{% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox)}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
-{% set _ = _zone_data.update({'negative_cache': item.negative_cache|d(gdnsd__negative_cache)}) %}
+{% set _ = _zone_data.update({'minimum': item.negative_cache|d(gdnsd__negative_cache)}) %}
 {% set _ = _zone_data.update({'nameservers': []}) %}
 {% if item.nameservers|d([]) %}
 {%   set _ = _zone_data['nameservers'].extend(item.nameservers) %}
 {% else %}
-{%   set _ = _zone_data['nameservers'].append(_zone_data['ns']) %}
+{%   set _ = _zone_data['nameservers'].append(_zone_data['mname']) %}
 {% endif %}
 {% set _ = _zone_data.update({'records': []}) %}
 {% if 'records' in item %}
@@ -48,7 +48,7 @@
 
 $TTL {{ _zone_data['ttl'] }}
 
-{{ _zone_data['domain'] }}. IN SOA {{ _zone_data['ns'] }}. {{ _zone_data['mailbox'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['negative_cache'] }} )
+{{ _zone_data['domain'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _ns in _zone_data['nameservers'] %}
 @   IN NS  {{ _ns }}{{ '.' if (_ns | search('\.')) else '' }}

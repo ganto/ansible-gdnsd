@@ -7,19 +7,19 @@
 {% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
 {% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
 {% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
-{% set _ = _zone_data.update({'ns': item.primary_nameserver|d(ansible_fqdn)}) %}
-{% set _ = _zone_data.update({'mailbox': item.mailbox|d(gdnsd__mailbox)}) %}
+{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_fqdn)}) %}
+{% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox)}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
-{% set _ = _zone_data.update({'negative_cache': item.negative_cache|d(gdnsd__negative_cache)}) %}
+{% set _ = _zone_data.update({'minimum': item.negative_cache|d(gdnsd__negative_cache)}) %}
 {% set _ = _zone_data.update({'nameservers': []}) %}
 {% if item.nameservers|d([]) %}
 {%   for _ns in item.nameservers %}
 {%     set _ = _zone_data['nameservers'].append(_ns + ('' if (_ns | search('\.')) else ('.' + _zone_data['domain']))) %}
 {%   endfor %}
 {% else %}
-{%   set _ = _zone_data['nameservers'].append(_zone_data['ns']) %}
+{%   set _ = _zone_data['nameservers'].append(_zone_data['mname']) %}
 {% endif %}
 {#
  #  Get the network part of the reverse zone to adjust the host records.
@@ -77,7 +77,7 @@
 
 $TTL {{ _zone_data['ttl'] }}
 
-{{ _zone_data['reverse_zone'] }}. IN SOA {{ _zone_data['ns'] }}. {{ _zone_data['mailbox'] + '.' + ansible_domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['negative_cache'] }} )
+{{ _zone_data['reverse_zone'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] + '.' + ansible_domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _ns in _zone_data['nameservers'] %}
 @   IN NS  {{ _ns }}.
