@@ -58,11 +58,13 @@ $TTL {{ _zone_data['ttl'] }}
 {{ _zone_data['domain'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _record in _zone_data['records'] %}
-{%   if _record['type'] == 'MX' %}
+{%   if _record['type'] == 'A' %}
+{{     _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}
+{%   elif _record['type'] == 'CNAME' %}
+{{     _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}{{ '.' if (_record['rdata'] | search('\.')) else '' }}
+{%   elif _record['type'] == 'MX' %}
 @ IN {{ _record['type'] }} {{ _record['preference']|d(5) }} {{ _record['rdata'] }}{{ '.' if (_record['rdata'] | search('\.')) else '' }}
 {%   elif _record['type'] == 'NS' %}
 {{     _record['name'] }} IN {{ _record['type'] }} {{ _record['nsdname'] }}{{ '.' if (_record['nsdname'] | search('\.')) else '' }}
-{%   else %}
-{{     _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}
 {%   endif %}
 {% endfor %}
