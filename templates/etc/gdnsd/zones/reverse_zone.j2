@@ -8,7 +8,7 @@
 {% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
 {% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
 {% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
-{% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox)}) %}
+{% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox) + '' if (item.mailbox|d(gdnsd__mailbox) | search('\.')) else ('.' + _zone_data['domain'])}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
@@ -77,7 +77,7 @@
 
 $TTL {{ _zone_data['ttl'] }}
 
-{{ _zone_data['reverse_zone'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] + '.' + ansible_domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
+{{ _zone_data['reverse_zone'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _ns in _zone_data['nameservers'] %}
 @   IN NS  {{ _ns }}.
