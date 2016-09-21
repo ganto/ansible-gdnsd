@@ -64,15 +64,21 @@ YAML dictionary with the following parameters:
   YAML dictionary with the following properties:
 
   ``name``
-    Required. Record name. Depending on the record type, this is e.g. a
-    host name.
+    Required (except for ``item.type: MX``). Record name. Depending on the
+    record type, this is e.g. a host name.
 
   ``type``
-    Optional. Record type. Defaults to ``A`` record.
+    Optional. Record type. Supported are ``A``, ``CNAME`` and ``MX``. Defaults
+    to ``A`` record.
 
   ``rdata``
     Required. Resource data which is served when querying the record.
     Depending on the record type this is e.g. a host address.
+
+  ``preference``
+    Optional. Preference given to this record among others with the same data.
+    Lower values are preferred. Only valid for ``MX`` record type. Defaults
+    to ``5``.
 
   ``do_reverse``
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
