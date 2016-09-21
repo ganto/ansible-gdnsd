@@ -1,5 +1,8 @@
 ## gdnsd
 
+[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?style=flat)](https://travis-ci.org/ganto/ansible-gdnsd)
+[![test-suite](http://img.shields.io/badge/test--suite-ansible--gdnsd-blue.svg?style=flat)](https://github.com/ganto/debops-test-suite/tree/master/ansible-gdnsd/)
+
 [gdnsd](http://gdnsd.org/) is a powerful Authoritative-only DNS server with
 some advanced features such as geographic (or other sorts of) balancing,
 redirection, wighting and service-state-conscious failover at the DNS layer.
