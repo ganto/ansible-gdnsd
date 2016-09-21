@@ -58,7 +58,7 @@ $TTL {{ _zone_data['ttl'] }}
 {{ _zone_data['domain'] }}. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] + '.' + item.domain }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _record in _zone_data['records'] %}
-{%   if _record['type'] == 'A' %}
+{%   if (_record['type'] == 'A') or (_record['type'] == 'TXT') %}
 {{     _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}
 {%   elif _record['type'] == 'CNAME' %}
 {{     _record['name'] }} IN {{ _record['type'] }} {{ _record['rdata'] }}{{ '.' if (_record['rdata'] | search('\.')) else '' }}

@@ -68,8 +68,8 @@ YAML dictionary with the following parameters:
     record type, this is e.g. a host name.
 
   ``type``
-    Optional. Record type. Supported are ``A``, ``CNAME`` and ``MX``. Defaults
-    to ``A`` record.
+    Optional. Record type. Supported are ``A``, ``CNAME``, ``MX`` and ``TXT``.
+    Defaults to ``A`` record.
 
   ``rdata``
     Required. Resource data which is served when querying the record.
