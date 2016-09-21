@@ -1,5 +1,3 @@
-.. _ganto.gdnsd
-
 Ansible role: ganto.gdnsd
 =========================
 

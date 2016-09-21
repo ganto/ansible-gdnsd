@@ -7,7 +7,7 @@
 {% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
 {% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
 {% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
-{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_fqdn)}) %}
+{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
 {% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox)}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
@@ -49,9 +49,9 @@
  #  If no host records are defined, at least add ourself as a PTR record.
  #}
 {%   if _net_tuples < 3 %}
-{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': ansible_fqdn }) %}
+{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': (ansible_hostname + '.' + _zone_data['domain'])}) %}
 {%   else %}
-{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[3], 'ptrdname': ansible_fqdn }) %}
+{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[3], 'ptrdname': (ansible_hostname + '.' + _zone_data['domain'])}) %}
 {%   endif %}
 {% endif %}
 {#

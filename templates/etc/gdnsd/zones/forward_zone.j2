@@ -6,7 +6,7 @@
 {% set _zone_data = {} %}
 {% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
 {% set _ = _zone_data.update({'domain': item.domain}) %}
-{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + item.domain )}) %}
+{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
 {% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox)}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
