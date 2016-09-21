@@ -80,6 +80,9 @@ YAML dictionary with the following parameters:
     Lower values are preferred. Only valid for ``MX`` record type. Defaults
     to ``5``.
 
+  ``ttl``
+    Optional. Individual record TTL.
+
   ``do_reverse``
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
     record.
