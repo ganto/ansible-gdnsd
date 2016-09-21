@@ -38,9 +38,9 @@
 {%     if (('type' in _entry and _entry.type == 'A') or (not 'type' in _entry)) and
           (('do_reverse' in _entry and _entry.do_reverse) or (not 'do_reverse' in _entry)) %}
 {%       if _net_tuples < 3 %}
-{%         set _ = _zone_data['records'].append({'name': _entry.rdata.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       else %}
-{%         set _ = _zone_data['records'].append({'name': _entry.rdata.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       endif %}
 {%     endif %}
 {%   endfor %}

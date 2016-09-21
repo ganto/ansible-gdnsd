@@ -75,7 +75,7 @@ YAML dictionary with the following parameters:
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
     record. Defaults to ``True`` if :envvar:`gdnsd__reverse_zones` is ``True``.
 
-  ``rdata``
+  ``target``
     Required. Resource data which is served when querying the record.
     Depending on the record type this is e.g. a host address.
 
