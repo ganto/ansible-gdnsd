@@ -8,7 +8,7 @@
 {% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
 {% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
 {% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
-{% set _ = _zone_data.update({'rname': item.mailbox|d(gdnsd__mailbox) + '' if (item.mailbox|d(gdnsd__mailbox) | search('\.')) else ('.' + _zone_data['domain'])}) %}
+{% set _ = _zone_data.update({'rname': (item.mailbox|d(gdnsd__mailbox)) + ('' if (item.mailbox|d(gdnsd__mailbox) | search('\.')) else ('.' + _zone_data['domain']))}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
