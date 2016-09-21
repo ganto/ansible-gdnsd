@@ -68,21 +68,31 @@ YAML dictionary with the following parameters:
     record type, this is e.g. a host name.
 
   ``type``
-    Optional. Record type. Supported are ``A``, ``CNAME``, ``MX`` and ``TXT``.
-    Defaults to ``A`` record.
+    Optional. Record type. Supported are ``A``, ``CNAME``, ``MX``, ``SRV`` and
+    ``TXT``. Defaults to ``A`` record.
+
+  ``do_reverse``
+    Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
+    record. Defaults to ``True`` if :envvar:`gdnsd__reverse_zones` is ``True``.
 
   ``rdata``
     Required. Resource data which is served when querying the record.
     Depending on the record type this is e.g. a host address.
 
-  ``preference``
-    Optional. Preference given to this record among others with the same data.
-    Lower values are preferred. Only valid for ``MX`` record type. Defaults
-    to ``5``.
-
   ``ttl``
     Optional. Individual record TTL.
 
-  ``do_reverse``
-    Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
-    record.
+  ``preference``
+    Optional. Preference given to this record among others with the same data.
+    Lower values are preferred. Only valid for ``MX`` and ``SRV`` record types.
+    Defaults to ``5``.
+
+  ``weight``
+    Optional. A server selection mechanism. The weight field specifies a
+    relative weight for entries with the same preference. Larger weights should
+    be given a proportionately higher probability of being selected. Only
+    valid for ``SRV`` record type. Defaults to ``0``.
+
+  ``port``
+    Required. The port on this target host of this service. Only valid for
+    ``SRV`` record type.
