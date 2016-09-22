@@ -50,7 +50,7 @@
 {%     if _hash_serial and _hash_serial[0] == _zone['hash'] %}
 {%       set _ = _zone.update({'serial': _hash_serial[1]}) %}
 {%     else %}
-{%       set _ = _zone.update({'serial': ansible_date_time.epoch}) %}
+{%       set _ = _zone.update({'serial': gdnsd__fact_zone_serial}) %}
 {%     endif %}
 {%   endif %}
 {% endfor %}

@@ -16,6 +16,11 @@
   notify:
     - Restart gdnsd
 
+- name: Generate serial
+  set_fact:
+    gdnsd__fact_zone_serial: '{{ ansible_date_time.epoch }}'
+  run_once: True
+
 - name: Read forward zone hashes
   shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ item.domain }} || true'
   changed_when: False
