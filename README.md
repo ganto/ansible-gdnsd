@@ -13,7 +13,7 @@ inventory and properly increase the serial on zone updates.
 
 ### Installation
 
-This role requires at least Ansible `v1.9.0`. To install it run:
+This role requires at least Ansible `v2.2.0`. To install it run:
 
 ```Shell
 git clone https://github.com/ganto/ansible-gdnsd ganto.gdnsd
