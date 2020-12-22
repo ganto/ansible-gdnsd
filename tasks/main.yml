@@ -24,7 +24,7 @@
 - name: Read forward zone hashes
   shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ item.domain }} || true'
   changed_when: False
-  always_run: True
+  check_mode: no
   register: gdnsd__register_forward_hashes
   when: (not "reverse_zone" in item) or
         (not item.reverse_zone)
@@ -50,7 +50,7 @@
                                               if (not "reverse_zone" in item)
                                               else item.reverse_zone }} || true'
   changed_when: False
-  always_run: True
+  check_mode: no
   register: gdnsd__register_reverse_hashes
   when: gdnsd__reverse_zones|d(True)
   with_items: '{{ gdnsd__zones
