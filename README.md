@@ -1,6 +1,6 @@
 ## gdnsd
 
-[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?style=flat)](https://travis-ci.org/ganto/ansible-gdnsd)
+[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?branch=master&style=flat)](https://travis-ci.org/ganto/ansible-gdnsd) [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-gdnsd-blue.svg?style=flat)](https://galaxy.ansible.com/ganto/gdnsd)
 
 [gdnsd](http://gdnsd.org/) is a powerful Authoritative-only DNS server with
 some advanced features such as geographic (or other sorts of) balancing,
@@ -13,10 +13,10 @@ inventory and properly increase the serial on zone updates.
 
 ### Installation
 
-This role requires at least Ansible `v2.2.0`. To install it run:
+This role requires at least Ansible `v2.7.0`. To install it run:
 
 ```Shell
-git clone https://github.com/ganto/ansible-gdnsd ganto.gdnsd
+ansible-galaxy install ganto.gdnsd
 ```
 
 
@@ -33,4 +33,3 @@ The content of this repository was written by:
 - [Reto Gantenbein](https://linuxmonk.ch/) | [e-mail](mailto:reto.gantenbein@linuxmonk.ch) | [GitHub](https://github.com/ganto)
 
 License: [GPLv3](https://tldrlegal.com/license/gnu-general-public-license-v3-%28gpl-3%29)
-
