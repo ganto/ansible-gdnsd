@@ -13,7 +13,7 @@ env:
     - MOLECULE_DISTRO: debian10
 
 install:
-  - pip install ansible ansible-lint molecule[docker]
+  - pip install ansible ansible-lint dnspython molecule[docker]
   - molecule --version
   - ansible --version
   - ansible-lint --version
