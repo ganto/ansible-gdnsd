@@ -8,7 +8,7 @@
 {% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
 {% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
 {% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
-{% set _ = _zone_data.update({'rname': (item.mailbox|d(gdnsd__mailbox)) + ('' if (item.mailbox|d(gdnsd__mailbox) | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{% set _ = _zone_data.update({'rname': (item.mailbox|d(gdnsd__mailbox)) + ('' if (item.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
@@ -16,7 +16,7 @@
 {% set _ = _zone_data.update({'nameservers': []}) %}
 {% if item.nameservers|d([]) %}
 {%   for _ns in item.nameservers %}
-{%     set _ = _zone_data['nameservers'].append(_ns + ('' if (_ns | search('\.')) else ('.' + _zone_data['domain']))) %}
+{%     set _ = _zone_data['nameservers'].append(_ns + ('' if (_ns | regex_search('\.')) else ('.' + _zone_data['domain']))) %}
 {%   endfor %}
 {% else %}
 {%   set _ = _zone_data['nameservers'].append(_zone_data['mname']) %}
@@ -38,9 +38,9 @@
 {%     if (('type' in _entry and _entry.type == 'A') or (not 'type' in _entry)) and
           (('do_reverse' in _entry and _entry.do_reverse) or (not 'do_reverse' in _entry)) %}
 {%       if _net_tuples < 3 %}
-{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       else %}
-{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
