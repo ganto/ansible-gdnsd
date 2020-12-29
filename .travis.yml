@@ -1,35 +1,36 @@
 ---
 language: python
-python:
-  - 3.8
-
+python: 3.8
 sudo: false
 
-# Install ansible
+# Install pip
 addons:
   apt:
     packages:
       - python-pip
 
 install:
-  # Install ansible
+  # Install ansible and helpers
   - pip install ansible yamllint ansible-lint
 
-  # Check ansible version
-  - ansible --version
+  # Print tool versions
+  - ansible --version; yamllint --version; ansible-lint --version
 
   # Create ansible.cfg with correct roles_path
   - printf '[defaults]\nroles_path = .\ninventory = tests/inventory\nretry_files_enabled = false\n' > ansible.cfg
 
   # Symlink role name to repository
-  - ln -s . gdnsd
+  - ln -s . ganto.gdnsd
 
 script:
   # Basic role syntax check
   - ansible-playbook --syntax-check tests/test.yml
 
   # YAML syntax linter
-  - yamllint .
+  - yamllint ganto.gdnsd
 
   # Ansible linter
-  - ansible-lint -v --exclude='./gdnsd'
+  - ansible-lint -v ganto.gdnsd
+
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
