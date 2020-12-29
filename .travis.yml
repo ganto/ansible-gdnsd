@@ -10,6 +10,7 @@ env:
   global:
     - ROLE_NAME: gdnsd
   matrix:
+    - MOLECULE_DISTRO: debian9
     - MOLECULE_DISTRO: debian10
 
 install:
