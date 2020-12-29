@@ -3,6 +3,8 @@
   hosts: all
 
   vars:
+    gdnsd__custom_packages:
+      - netbase
     gdnsd__zones:
       - domain: example.com
         records:
