@@ -1,7 +1,13 @@
 ---
 - name: Converge
   hosts: all
-  tasks:
-    - name: "Include ganto.gdnsd"
-      include_role:
-        name: "ganto.gdnsd"
+
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_os_family == 'Debian'
+      changed_when: false
+
+  roles:
+    - role: ganto.gdnsd
