@@ -13,10 +13,22 @@
 #   Basic options
 # -----------------
 
+# .. envvar:: gdnsd__default_packages
+#
+# List of packages to install by default.
+gdnsd__default_packages: [ 'gdnsd' ]
+
+
+# .. envvar:: gdnsd__custom_packages
+#
+# List of additional user defined packages to install.
+gdnsd__custom_packages: []
+
+
 # .. envvar:: gdnsd__packages
 #
-# gdnsd packages to install.
-gdnsd__packages: [ 'gdnsd' ]
+# List of packages to install.
+gdnsd__packages: '{{ gdnsd__default_packages | union(gdnsd__custom_packages) }}'
 
 
 # .. envvar:: gdsnd__listen

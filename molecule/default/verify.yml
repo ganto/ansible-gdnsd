@@ -1,0 +1,48 @@
+---
+# This is an example playbook to execute Ansible tests.
+
+- name: Verify
+  hosts: all
+
+  tasks:
+  - name: Gathering service facts
+    service_facts:
+
+  - name: Ensure gdnsd service is enabled
+    assert:
+      quiet: true
+      that: '{{ ansible_facts.services["gdnsd.service"]["status"] == "enabled" }}'
+
+  - name: Ensure gdnsd service is running
+    assert:
+      quiet: true
+      that: '{{ ansible_facts.services["gdnsd.service"]["state"] == "running" }}'
+
+  - name: Ensure a service is listening on port 53
+    wait_for:
+      port: 53
+      connect_timeout: 2
+
+  - name: Check DNS records
+    assert:
+      quiet: true
+      that: '{{ item.query == item.response }}'
+    loop:
+      - query: '{{ lookup("dig", "example.com.", "qtype=NS", "@" + ansible_default_ipv4.address, wantlist=True) }}'
+        response: '{{ [ ansible_hostname + ".example.com." ] }}'
+      - query: '{{ lookup("dig", "example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_default_ipv4.address }}'
+      - query: '{{ lookup("dig", "example.com.", "qtype=AAAA", "@" + ansible_default_ipv4.address) }}'
+        #response: '2606:2800:220:1:248:1893:25c8:1946'
+        # TODO: AAAA records seem not to be supported yet
+        response: ''
+      - query: '{{ lookup("dig", "www.example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_default_ipv4.address }}'
+      - query: '{{ lookup("dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address, wantlist=True) }}'
+        response: '{{ [ ansible_default_ipv4.address ] }}'
+      - query: '{{ lookup("dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
+        response: '5 {{ ansible_default_ipv4.address }}.'
+      - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
+        response: 'tested-by=molecule'
+      - query: '{{ lookup("dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.com.'
