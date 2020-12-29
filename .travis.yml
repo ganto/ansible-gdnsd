@@ -8,7 +8,9 @@ services:
 
 env:
   global:
-    ROLE_NAME: gdnsd
+    - ROLE_NAME: gdnsd
+  matrix:
+    - MOLECULE_DISTRO: debian10
 
 install:
   - pip install ansible ansible-lint molecule[docker]
