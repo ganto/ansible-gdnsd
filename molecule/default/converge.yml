@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include ganto.gdnsd"
+      include_role:
+        name: "ganto.gdnsd"
