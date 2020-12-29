@@ -26,12 +26,5 @@
           - type: MX
             target: '{{ ansible_default_ipv4.address }}'
 
-  pre_tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-      when: ansible_os_family == 'Debian'
-      changed_when: false
-
   roles:
     - role: ganto.gdnsd
