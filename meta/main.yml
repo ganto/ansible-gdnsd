@@ -20,7 +20,6 @@ galaxy_info:
         - bionic
         - focal
         - groovy
-        - hirsute
 
   galaxy_tags:
     - gdnsd
