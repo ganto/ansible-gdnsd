@@ -1,6 +1,6 @@
 ganto.gdnsd - Manage gdnsd, an authoritative-only DNS server
 
-Copyright (C) 2016 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+Copyright (C) 2016-2020 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
 
 ganto.gdnsd is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 3, as
