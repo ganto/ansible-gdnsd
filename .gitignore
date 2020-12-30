@@ -1,0 +1,12 @@
+# The project-wide .gitignore file
+
+### Ansible ###
+*.retry
+
+### Python ###
+__pycache__/
+*.py[cod]
+
+### Sphinx ###
+docs/_build
+docs/defaults.rst
