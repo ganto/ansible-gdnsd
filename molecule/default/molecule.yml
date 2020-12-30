@@ -8,6 +8,7 @@ lint: |
   set -e
   yamllint .
   ansible-lint --exclude molecule/ .
+  cd docs && make linkcheck
 platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian10}-ansible:latest"
