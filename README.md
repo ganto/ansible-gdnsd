@@ -1,6 +1,6 @@
 ## Ansible Role: ganto.gdnsd
 
-[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?branch=master&style=flat)](https://travis-ci.org/ganto/ansible-gdnsd) [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-ganto.gdnsd-blue.svg?style=flat&logo=ansible)](https://galaxy.ansible.com/ganto/gdnsd)
+[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?branch=master&style=flat)](https://travis-ci.org/ganto/ansible-gdnsd) [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-ganto.gdnsd-blue.svg?style=flat&logo=ansible)](https://galaxy.ansible.com/ganto/gdnsd) [![Read the Docs](https://img.shields.io/badge/docs-ansible--gdnsd-darkblue.svg?style=flat&logo=read-the-docs)](https://ansible-gdnsd.readthedocs.io/)
 
 [gdnsd](http://gdnsd.org/) is a powerful Authoritative-only DNS server with
 some advanced features such as geographic (or other sorts of) balancing,
@@ -23,8 +23,12 @@ ansible-galaxy install ganto.gdnsd
 
 ### Documentation
 
-Currently the documentation is only available in raw format in the
-[docs](/docs/) directory.
+The role documentation is available online at [ansible-gdnsd.readthedocs.io](https://ansible-gdnsd.readthedocs.io).
+
+It can be built locally from the [docs](docs/) directory by running:
+```Shell
+cd docs && make html
+```
 
 
 ### Author
