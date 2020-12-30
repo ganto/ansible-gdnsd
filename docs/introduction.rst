@@ -1,22 +1,40 @@
 Introduction
 ============
 
-`gdnsd <http://gdnsd.org/>`_ is a powerful Authoritative-only DNS server with
+`gdnsd <https://gdnsd.org/>`_ is a powerful Authoritative-only DNS server with
 some advanced features such as geographic (or other sorts of) balancing,
 redirection, wighting and service-state-conscious failover at the DNS layer.
 
-The ``ganto.gdnsd`` Ansible role installs and configures the name service and
-is able to generate zone files from name records defined in the Ansible
-inventory and properly increase the serial on zone updates.
+`ganto.gdnsd <https://galaxy.ansible.com/ganto/gdnsd>`_ is an `Ansible
+<https://www.ansible.com>`_ role to install and manage the :program:`gdnsd`
+name service and is able to generate `RFC1035
+<https://tools.ietf.org/html/rfc1035>`_ conformant zone files from domain name
+records defined in the Ansible inventory. It will properly increase the serial
+on zone updates.
+
+
+.. _gdnsd_requirements:
+
+Requirements
+~~~~~~~~~~~~
+
+This Ansible role can currently only be used on Debian- and Ubuntu-based
+distribution that have the `gdnsd package <https://tracker.debian.org/pkg/gdnsd>`_
+available in their repositories.
+
+To run the role at least Ansible ``v2.7.0`` is required.
+
+
+.. _gdnsd_installation:
 
 Installation
 ~~~~~~~~~~~~
 
-This role requires at least Ansible ``v1.9.0``. To install it run:
+On the machine where Ansible is run the role can be installed by running:
 
 .. code-block:: console
 
-   user@host:~$ git clone https://github.com/ganto/ansible-gdnsd ganto.gdnsd
+   ansible-galaxy install ganto.gdnsd
 
 ..
  Local Variables:
