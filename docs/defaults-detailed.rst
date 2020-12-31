@@ -22,12 +22,17 @@ YAML dictionary with the following parameters:
 ``domain``
   Domain name of the DNS zone. Required, if this is a forward zone.
 
-``reverse_zone``
-  Optional. Set this to ``True`` to mark zone entry as reverse zone. Defaults
-  to ``False``.
+``auto_reverse_zone``
+  Optional. Automatically generate reverse zone for this domain. Default to
+  :envvar:`gdnsd__auto_reverse_zone`. Individual records can be excluded from
+  the reverse zone by setting ``do_reverse: False`` in the record item
+  definition.
 
-``reverse_network``
-  Network definition for reverse zone. Required, if this is a reverse zone.
+``reverse_zone``
+  Name of the reverse zone (e.g. '1.168.192.in-addr.arpa'). Required if this
+  is a reverse zone. Optional if this is a forward zone that has
+  ``auto_reverse_zone`` enabled. In this case it defaults to
+  :envvar:`gdnsd__default_reverse_zone`.
 
 ``primary_nameserver``
   Optional. DNS name of the primary name server for this zone which is added
@@ -73,7 +78,7 @@ YAML dictionary with the following parameters:
 
   ``do_reverse``
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
-    record. Defaults to ``True`` if :envvar:`gdnsd__reverse_zones` is ``True``.
+    record. Defaults to ``True`` if ``auto_reverse_zone: True`` for this zone.
 
   ``target``
     Required. Resource data which is served when querying the record.

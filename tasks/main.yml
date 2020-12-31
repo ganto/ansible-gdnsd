@@ -54,10 +54,14 @@
   changed_when: False
   check_mode: no
   register: gdnsd__register_reverse_hashes
-  when: gdnsd__reverse_zones|d(True)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
+  when: (item.auto_reverse_zone|d(gdnsd__auto_reverse_zone) and
+         item.domain|d('') | length > 0) or
+        (item.reverse_zone|d('') | length > 0)
+  loop: '{{ gdnsd__zones
+            if (gdnsd__zones | length) > 0
+            else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
+  loop_control:
+    label: '{{ item.reverse_zone|d(gdnsd__default_reverse_zone) }}'
 
 - name: Generate reverse zones
   template:
@@ -68,10 +72,14 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
-  when: gdnsd__reverse_zones|d(True)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
+  when: (item.auto_reverse_zone|d(gdnsd__auto_reverse_zone) and
+         item.domain|d('') | length > 0) or
+        (item.reverse_zone|d('') | length > 0)
+  loop: '{{ gdnsd__zones
+            if (gdnsd__zones | length) > 0
+            else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
+  loop_control:
+    label: '{{ item.reverse_zone|d(gdnsd__default_reverse_zone) }}'
 
 - name: Check configuration and zone files
   command: gdnsd -s checkconf  # noqa 301
