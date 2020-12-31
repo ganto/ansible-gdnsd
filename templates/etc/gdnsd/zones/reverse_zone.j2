@@ -42,7 +42,7 @@
 {%       if _net_tuples < 3 %}
 {%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       else %}
-{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[3], 'ptrdname': _entry.name + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
+{%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[3], 'ptrdname': (_entry.name if (_entry.name != '@') else _zone_data['domain'] ) + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       endif %}
 {%     endif %}
 {%   endfor %}
