@@ -33,10 +33,12 @@
       (('reverse_zone' in item and item.reverse_zone) or (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone)) %}
 {%   for _entry in item.records %}
 {#
- #  Add a PTR entry if record type is 'A' and `item.do_reverse` is not False.
+ #  Add a PTR entry if record type is 'A', `item.do_reverse` is not False
+ #  and it's not a wildcard record.
  #}
 {%     if (('type' in _entry and _entry.type == 'A') or (not 'type' in _entry)) and
-          (('do_reverse' in _entry and _entry.do_reverse) or (not 'do_reverse' in _entry)) %}
+          (('do_reverse' in _entry and _entry.do_reverse) or (not 'do_reverse' in _entry)) and
+          (not '*' in _entry.name) %}
 {%       if _net_tuples < 3 %}
 {%         set _ = _zone_data['records'].append({'name': _entry.target.split('.')[_net_tuples:4] | reverse | join('.'), 'ptrdname': _entry.name + ('' if (_entry.name | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {%       else %}
