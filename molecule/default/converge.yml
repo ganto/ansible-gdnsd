@@ -11,21 +11,30 @@
         auto_reverse_zone: False
       - domain: example.com
         records:
+          # 'A' record
           - name: '{{ ansible_hostname }}'
             target: '{{ ansible_default_ipv4.address }}'
+          # 'AAAA' record
           - name: '@'
             type: AAAA
             target: '2606:2800:220:1:248:1893:25c8:1946'
             do_reverse: false
+          # 'A' record of domain '@'
           - name: '@'
             target: '{{ ansible_default_ipv4.address }}'
             do_reverse: false
+          # 'A' record of wildcard domain
+          - name: '*.apps'
+            target: '{{ ansible_default_ipv4.address }}'
+          # 'CNAME' record
           - name: www
             type: CNAME
             target: example.com
+          # 'TXT' record
           - name: ansible
             type: TXT
             target: "tested-by=molecule"
+          # 'MX' record
           - type: MX
             target: '{{ ansible_default_ipv4.address }}'
 

@@ -52,6 +52,8 @@
         response: '{{ ansible_default_ipv4.address }}'
       - query: '{{ lookup("dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address, wantlist=True) }}'
         response: '{{ [ ansible_default_ipv4.address ] }}'
+      - query: '{{ lookup("dig", "test.apps.example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_default_ipv4.address }}'
       - query: '{{ lookup("dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
         response: '5 {{ ansible_default_ipv4.address }}.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
