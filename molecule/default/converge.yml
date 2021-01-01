@@ -6,6 +6,9 @@
     gdnsd__custom_packages:
       - netbase
     gdnsd__zones:
+      # domain without records
+      - domain: example.net
+        auto_reverse_zone: False
       - domain: example.com
         records:
           - name: '{{ ansible_hostname }}'

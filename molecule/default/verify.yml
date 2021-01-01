@@ -23,7 +23,19 @@
       port: 53
       connect_timeout: 2
 
-  - name: Check DNS records
+  - name: Check example.net DNS records
+    assert:
+      quiet: true
+      that: '{{ item.query == item.response }}'
+    loop:
+      # A domain with no records defined should have at least an 'NS' and an
+      # 'A' record definend of the host itself
+      - query: '{{ lookup("dig", "example.net.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.net.'
+      - query: '{{ lookup("dig", ansible_hostname + ".example.net.", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_default_ipv4.address }}'
+
+  - name: Check example.com DNS records
     assert:
       quiet: true
       that: '{{ item.query == item.response }}'
