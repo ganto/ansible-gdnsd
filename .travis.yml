@@ -23,6 +23,7 @@ before_script:
   - cd ../
   - mv -v ansible-$ROLE_NAME ganto.$ROLE_NAME
   - cd ganto.$ROLE_NAME
+  - echo $DOCKER_TOKEN | docker login --username $DOCKER_USERNAME --password-stdin index.docker.io
 
 script:
   - molecule test
