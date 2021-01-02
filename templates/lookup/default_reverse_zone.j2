@@ -1,0 +1,18 @@
+{#
+ #  Return the reverse zone name according to the subnet mask of the default
+ #  IPv4 network address configured on the host.
+ #}
+{% set _zone_name_reverse = ['arpa', 'in-addr'] %}
+{#
+ #  Iterate over the four IPv4 octets
+ #}
+{% for _index in range(3) %}
+{%   set _netmask_octet = ansible_default_ipv4.netmask.split('.')[_index] | int %}
+{%   if _netmask_octet > 0 %}
+{%     set _ = _zone_name_reverse.append(ansible_default_ipv4.address.split('.')[_index]) %}
+{%   endif %}
+{% endfor %}
+{#
+ #  Print zone name
+ #}
+{{ _zone_name_reverse | reverse | join('.') }}
