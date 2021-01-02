@@ -1,41 +1,19 @@
 ---
 
-- name: '{{ gdnsd__include_zone.domain }} - Read existing forward zone file hash'
-  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__include_zone.domain }} || true'
-  changed_when: False
-  check_mode: no
-  register: gdnsd__register_forward_zone_hash
-  when: ('domain' in gdnsd__include_zone.keys())
-
-- name: '{{ gdnsd__include_zone.domain }} - Generate forward zone file'
-  template:
-    src: 'etc/gdnsd/zones/forward_zone.j2'
-    dest: '/etc/gdnsd/zones/{{ gdnsd__include_zone.domain }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  when: ('domain' in gdnsd__include_zone.keys())
-
-- name: Set reverse zone name fact
+- name: Set zone type fact
   set_fact:
-    gdnsd__fact_reverse_zone: '{{ gdnsd__include_zone.reverse_zone
-                                  if "reverse_zone" in gdnsd__include_zone.keys()
-                                  else gdnsd__default_reverse_zone }}'
+    gdnsd__fact_zone_type: '{{ lookup("template", "lookup/zone_type.j2") | trim }}'
 
-- name: '{{ gdnsd__fact_reverse_zone }} - Read existing reverse zone file hash'
-  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__fact_reverse_zone }} || true'
-  changed_when: False
-  check_mode: no
-  register: gdnsd__register_reverse_zone_hash
-  when: ('reverse_zone' in gdnsd__include_zone.keys()) or
-        (gdnsd__include_zone['auto_reverse_zone']|d(gdnsd__auto_reverse_zone))
+- name: Fail on invalid zone records
+  fail:
+    msg: 'Zone definition cannot mix PTR and other records'
+  when: gdnsd__fact_zone_type not in ['forward', 'reverse']
 
-- name: '{{ gdnsd__fact_reverse_zone }} - Generate reverse zone file'
-  template:
-    src: 'etc/gdnsd/zones/reverse_zone.j2'
-    dest: '/etc/gdnsd/zones/{{ gdnsd__fact_reverse_zone }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  when: ('reverse_zone' in gdnsd__include_zone.keys()) or
+- name: Include tasks to manage forward zone file
+  include_tasks: forward.yml
+  when: gdnsd__fact_zone_type == 'forward'
+
+- name: Include tasks to manage reverse zone file
+  include_tasks: reverse.yml
+  when: (gdnsd__fact_zone_type == 'reverse') or
         (gdnsd__include_zone['auto_reverse_zone']|d(gdnsd__auto_reverse_zone))
