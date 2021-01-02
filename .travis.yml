@@ -15,6 +15,7 @@ env:
 
 install:
   - pip install ansible ansible-lint dnspython molecule[docker]
+  - pip install -r docs/requirements.txt
   - molecule --version
   - ansible --version
   - ansible-lint --version

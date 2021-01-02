@@ -1,0 +1,17 @@
+---
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  builder: html
+  configuration: docs/conf.py
+
+# Configuration of the Python environment to be used
+python:
+  install:
+    - requirements: docs/requirements.txt
+  system_packages: true

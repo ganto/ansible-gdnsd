@@ -1,14 +1,15 @@
-## gdnsd
+## Ansible Role: ganto.gdnsd
 
-[![Travis CI](http://img.shields.io/travis/ganto/ansible-gdnsd.svg?branch=master&style=flat)](https://travis-ci.org/ganto/ansible-gdnsd) [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-gdnsd-blue.svg?style=flat)](https://galaxy.ansible.com/ganto/gdnsd)
+[![Travis CI](https://img.shields.io/travis/ganto/ansible-gdnsd.svg?branch=master&style=flat)](https://travis-ci.org/ganto/ansible-gdnsd) [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-ganto.gdnsd-blue.svg?style=flat&logo=ansible)](https://galaxy.ansible.com/ganto/gdnsd) [![Read the Docs](https://img.shields.io/badge/docs-ansible--gdnsd-darkblue.svg?style=flat&logo=read-the-docs)](https://ansible-gdnsd.readthedocs.io/)
 
-[gdnsd](http://gdnsd.org/) is a powerful Authoritative-only DNS server with
+[gdnsd](https://gdnsd.org/) is a powerful Authoritative-only DNS server with
 some advanced features such as geographic (or other sorts of) balancing,
 redirection, wighting and service-state-conscious failover at the DNS layer.
 
-The `ganto.gdnsd` Ansible role installs and configures the name service and
-is able to generate zone files from name records defined in the Ansible
-inventory and properly increase the serial on zone updates.
+The [ganto.gdnsd](https://galaxy.ansible.com/ganto/gdnsd) Ansible role installs
+and configures the domain name server and is able to generate and update DNS
+zone files from name records defined in the Ansible inventory. It will also
+properly increase the serial on zone updates.
 
 
 ### Installation
@@ -22,8 +23,12 @@ ansible-galaxy install ganto.gdnsd
 
 ### Documentation
 
-Currently the documentation is only available in raw format in the
-[docs](/docs/) directory.
+The role documentation is available online at [ansible-gdnsd.readthedocs.io](https://ansible-gdnsd.readthedocs.io).
+
+It can be built locally from the [docs](docs/) directory by running:
+```Shell
+cd docs && make html
+```
 
 
 ### Author
