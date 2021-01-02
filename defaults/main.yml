@@ -85,15 +85,16 @@ gdnsd__expire: '1w'
 gdnsd__negative_cache: '1h'
 
 
-# .. envvar:: gdnsd__reverse_zones
+# .. envvar:: gdnsd__auto_reverse_zone
 #
-# Support reverse zones. Set this to ``False`` in case reverse name lookup
-# should not be supported.
-gdnsd__reverse_zones: True
+# Automatically generate reverse zones for defined domains. This can be
+# overwritten per zone by specificying the ``auto_reverse_zone`` attribute in
+# the zone definition.
+gdnsd__auto_reverse_zone: True
 
 
 # .. envvar:: gdnsd__default_reverse_zone:
 #
-# Default reverse zone. This value is used in case `network` is not specified in the
-# zone definition and :envvar:`gdnsd__reverse_zones` is enabled.
+# Default reverse zone. This value is used if a zone entry has defined
+# ``auto_reverse_zone: True`` but doesn't specify the ``reverse_zone``.
 gdnsd__default_reverse_zone: '{{ ansible_default_ipv4.address.split(".")[:3] | reverse | join(".") }}.in-addr.arpa'

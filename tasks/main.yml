@@ -20,55 +20,17 @@
     gdnsd__fact_zone_serial: '{{ ansible_date_time.epoch }}'
   run_once: True
 
-- name: Read forward zone hashes
-  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ item.domain }} || true'
-  changed_when: False
-  check_mode: no
-  register: gdnsd__register_forward_hashes
-  when: (not "reverse_zone" in item) or
-        (not item.reverse_zone)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"domain": ansible_domain} ] }}'
-
-- name: Generate forward zones
-  template:
-    src: 'etc/gdnsd/zones/forward_zone.j2'
-    dest: '/etc/gdnsd/zones/{{ item.domain }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  when: (not "reverse_zone" in item) or
-        (not item.reverse_zone)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"domain": ansible_domain} ] }}'
-
-- name: Read reverse zone hashes
-  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__default_reverse_zone
-                                              if (not "reverse_zone" in item)
-                                              else item.reverse_zone }} || true'
-  changed_when: False
-  check_mode: no
-  register: gdnsd__register_reverse_hashes
-  when: gdnsd__reverse_zones|d(True)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
-
-- name: Generate reverse zones
-  template:
-    src: 'etc/gdnsd/zones/reverse_zone.j2'
-    dest: '/etc/gdnsd/zones/{{ gdnsd__default_reverse_zone
-                               if (not "reverse_zone" in item)
-                               else item.reverse_zone }}'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  when: gdnsd__reverse_zones|d(True)
-  with_items: '{{ gdnsd__zones
-                  if (gdnsd__zones|d([]) | length) > 0
-                  else [ {"reverse_zone": gdnsd__default_reverse_zone} ] }}'
+- name: Include tasks for generating zone file
+  include_tasks: zone.yml
+  loop: '{{ gdnsd__zones
+            if (gdnsd__zones | length) > 0
+            else [ {"domain": ansible_domain,
+                    "reverse_zone": gdnsd__default_reverse_zone} ] }}'
+  loop_control:
+    label: '{{ gdnsd__include_zone.domain
+               if "domain" in gdnsd__include_zone.keys()
+               else gdnsd__include_zone.reverse_zone }}'
+    loop_var: gdnsd__include_zone
 
 - name: Check configuration and zone files
   command: gdnsd -s checkconf  # noqa 301
