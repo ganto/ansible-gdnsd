@@ -4,18 +4,18 @@
  #  way the serial will only be updated if there are some content changes.
  #}
 {% set _zone_data = {} %}
-{% set _ = _zone_data.update({'ttl': item.ttl|d(gdnsd__ttl)}) %}
-{% set _ = _zone_data.update({'domain': item.domain|d(ansible_domain)}) %}
-{% set _ = _zone_data.update({'reverse_zone': item.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
-{% set _ = _zone_data.update({'mname': item.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
-{% set _ = _zone_data.update({'rname': (item.mailbox|d(gdnsd__mailbox)) + ('' if (item.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
-{% set _ = _zone_data.update({'refresh': item.refresh|d(gdnsd__refresh)}) %}
-{% set _ = _zone_data.update({'retry': item.retry|d(gdnsd__retry)}) %}
-{% set _ = _zone_data.update({'expire': item.expire|d(gdnsd__expire)}) %}
-{% set _ = _zone_data.update({'minimum': item.negative_cache|d(gdnsd__negative_cache)}) %}
+{% set _ = _zone_data.update({'ttl': gdnsd__include_zone.ttl|d(gdnsd__ttl)}) %}
+{% set _ = _zone_data.update({'domain': gdnsd__include_zone.domain|d(ansible_domain)}) %}
+{% set _ = _zone_data.update({'reverse_zone': gdnsd__include_zone.reverse_zone|d(gdnsd__default_reverse_zone)}) %}
+{% set _ = _zone_data.update({'mname': gdnsd__include_zone.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
+{% set _ = _zone_data.update({'rname': (gdnsd__include_zone.mailbox|d(gdnsd__mailbox)) + ('' if (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
+{% set _ = _zone_data.update({'refresh': gdnsd__include_zone.refresh|d(gdnsd__refresh)}) %}
+{% set _ = _zone_data.update({'retry': gdnsd__include_zone.retry|d(gdnsd__retry)}) %}
+{% set _ = _zone_data.update({'expire': gdnsd__include_zone.expire|d(gdnsd__expire)}) %}
+{% set _ = _zone_data.update({'minimum': gdnsd__include_zone.negative_cache|d(gdnsd__negative_cache)}) %}
 {% set _ = _zone_data.update({'nameservers': []}) %}
-{% if item.nameservers|d([]) %}
-{%   for _ns in item.nameservers %}
+{% if gdnsd__include_zone.nameservers|d([]) %}
+{%   for _ns in gdnsd__include_zone.nameservers %}
 {%     set _ = _zone_data['nameservers'].append(_ns + ('' if (_ns | regex_search('\.')) else ('.' + _zone_data['domain']))) %}
 {%   endfor %}
 {% else %}
@@ -29,11 +29,11 @@
  #  Only create reverse entries if this is a reverse zone.
  #}
 {% set _ = _zone_data.update({'records': []}) %}
-{% if ('records' in item) and
-      (('reverse_zone' in item and item.reverse_zone) or (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone)) %}
-{%   for _entry in item.records %}
+{% if ('records' in gdnsd__include_zone) and
+      (('reverse_zone' in gdnsd__include_zone and gdnsd__include_zone.reverse_zone) or (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone)) %}
+{%   for _entry in gdnsd__include_zone.records %}
 {#
- #  Add a PTR entry if record type is 'A', `item.do_reverse` is not False
+ #  Add a PTR entry if record type is 'A', `gdnsd__include_zone.do_reverse` is not False
  #  and it's not a wildcard record.
  #}
 {%     if (('type' in _entry and _entry.type == 'A') or (not 'type' in _entry)) and
@@ -61,17 +61,18 @@
  #  accordingly
  #}
 {% set _zone = {'hash': _zone_data | string | hash('md5')} %}
-{% for _result in gdnsd__register_reverse_hashes.results %}
-{%   if ('reverse_zone' in _result.item and (_result.item.reverse_zone == _zone_data['reverse_zone'])) or
-        (_zone_data['reverse_zone'] == gdnsd__default_reverse_zone) %}
-{%     set _hash_serial = _result.stdout.split(' ')[2:] %}
-{%     if _hash_serial and _hash_serial[0] == _zone['hash'] %}
-{%       set _ = _zone.update({'serial': _hash_serial[1]}) %}
-{%     else %}
-{%       set _ = _zone.update({'serial': gdnsd__fact_zone_serial}) %}
-{%     endif %}
+{% if gdnsd__register_reverse_zone_hash.stdout | length > 0 %}
+{%   set _hash_serial = gdnsd__register_reverse_zone_hash.stdout.split(' ')[2:] %}
+{#
+ #   If the hash hasn't change since the last update also re-use the existing serial
+ #}
+{%   if _hash_serial[0] == _zone['hash'] %}
+{%     set _ = _zone.update({'serial': _hash_serial[1]}) %}
 {%   endif %}
-{% endfor %}
+{% endif %}
+{% if 'serial' not in _zone.keys() %}
+{%   set _ = _zone.update({'serial': gdnsd__fact_zone_serial}) %}
+{% endif %}
 {#
  #  Eventually output the zone data
  #}
