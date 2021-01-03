@@ -36,7 +36,7 @@
 {%   for _record in gdnsd__include_zone.records %}
 {%     if gdnsd__fact_zone_type == 'forward' %}
 {%       set _rr = {'type': _record.type|d('A'), 'target': _record.target} %}
-{%       for _key in [ 'name', 'port', 'preference', 'ttl', 'weight' ] %}
+{%       for _key in [ 'name', 'port', 'preference', 'ttl', 'weight', 'flag' ] %}
 {%         if _key in _record.keys() %}
 {%           set _ = _rr.update({_key: _record[_key]}) %}
 {%         endif %}
@@ -113,6 +113,8 @@ $TTL {{ _zone_data['ttl'] }}
 {% for _record in _zone_data['records'] %}
 {%   if (_record['type'] in ['A', 'AAAA', 'PTR', 'TXT']) %}
 {{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}
+{%   elif _record['type'] == 'CAA' %}
+{{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['flag']|d(0) }} {{ _record['target'] }}
 {%   elif _record['type'] == 'CNAME' %}
 {{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}{{ '.' if (_record['target'] | regex_search('\.')) else '' }}
 {%   elif _record['type'] == 'MX' %}
