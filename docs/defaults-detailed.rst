@@ -73,8 +73,9 @@ YAML dictionary with the following parameters:
     record type, this is e.g. a host name.
 
   ``type``
-    Optional. Record type. Supported are ``A``, ``AAAA``, ``CNAME``, ``MX``,
-    ``SRV`` and ``TXT``. Defaults to ``A`` record.
+    Optional. Record type. Supported are ``A``, ``AAAA``, ``CAA``
+    (:program:`gdnsd` >= 2.3.0), ``CNAME``, ``MX``, ``SRV`` and ``TXT``.
+    Defaults to ``A`` record.
 
   ``do_reverse``
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
@@ -101,3 +102,8 @@ YAML dictionary with the following parameters:
   ``port``
     Required. The port on this target host of this service. Only valid for
     ``SRV`` record type.
+
+  ``flag``
+    Optional. Only valid for ``CAA`` record type. Set to ``1`` to indicate the
+    *Issuer Critical* flag. Defaults to ``0``. For more information see
+    `RFC6844 <https://tools.ietf.org/html/rfc6844>`_.
