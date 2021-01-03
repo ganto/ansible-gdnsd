@@ -8,8 +8,8 @@
     gdnsd__zones:
       # domain without records
       - domain: example.net
-        auto_reverse_zone: False
       - domain: example.com
+        auto_reverse_zone: False
         records:
           # 'A' record
           - name: '{{ ansible_hostname }}'
@@ -18,11 +18,9 @@
           - name: '@'
             type: AAAA
             target: '2606:2800:220:1:248:1893:25c8:1946'
-            do_reverse: false
           # 'A' record of domain '@'
           - name: '@'
             target: '{{ ansible_default_ipv4.address }}'
-            do_reverse: false
           # 'A' record of wildcard domain
           - name: '*.apps'
             target: '{{ ansible_default_ipv4.address }}'

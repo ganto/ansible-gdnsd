@@ -34,6 +34,8 @@
         response: '{{ ansible_hostname }}.example.net.'
       - query: '{{ lookup("dig", ansible_hostname + ".example.net.", "@" + ansible_default_ipv4.address) }}'
         response: '{{ ansible_default_ipv4.address }}'
+      - query: '{{ lookup("dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.net.'
 
   - name: Check example.com DNS records
     assert:
@@ -58,5 +60,3 @@
         response: '5 {{ ansible_default_ipv4.address }}.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
         response: 'tested-by=molecule'
-      - query: '{{ lookup("dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.com.'
