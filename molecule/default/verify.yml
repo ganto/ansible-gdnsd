@@ -60,3 +60,5 @@
         response: '5 {{ ansible_default_ipv4.address }}.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
         response: 'tested-by=molecule'
+      - query: '{{ lookup("dig", "10.42.0.10", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.com.'

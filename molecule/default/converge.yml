@@ -35,6 +35,16 @@
           # 'MX' record
           - type: MX
             target: '{{ ansible_default_ipv4.address }}'
+      # reverse only domain
+      - reverse_zone: '42.10.in-addr.arpa'
+        mailbox: 'hostmaster@example.com'
+        nameservers:
+          - '{{ ansible_hostname }}.example.com'
+        primary_nameserver: '{{ ansible_hostname }}.example.com'
+        records:
+          - name: '10.0'
+            type: PTR
+            target: '{{ ansible_hostname }}.example.com.'
 
   roles:
     - role: ganto.gdnsd
