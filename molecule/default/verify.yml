@@ -72,6 +72,8 @@
         response: '192.168.200.3'
       - query: '{{ lookup("dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
         response: '5 {{ ansible_hostname }}.example.com.'
+      - query: '{{ lookup("dig", "_ldap._tcp.example.com.", "qtype=SRV", "@" + ansible_default_ipv4.address) }}'
+        response: '0 100 389 {{ ansible_hostname }}.example.com.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
         response: 'tested-by=molecule'
       - query: '{{ lookup("dig", "192.168.200.1", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'

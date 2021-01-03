@@ -50,6 +50,13 @@
           # 'MX' record
           - type: MX
             target: '{{ ansible_hostname }}.example.com'
+          # 'SRV' record
+          - name: _ldap._tcp
+            type: SRV
+            port: 389
+            preference: 0
+            weight: 100
+            target: '{{ ansible_hostname }}'
           # 'TXT' record
           - name: ansible
             type: TXT
