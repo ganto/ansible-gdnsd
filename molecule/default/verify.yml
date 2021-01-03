@@ -88,3 +88,25 @@
       - query: '{{ lookup("dig", "192.168.200.5", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
         # no PTR record for wildcard domain
         response: 'NXDOMAIN'
+
+  - name: Check SOA records
+    assert:
+      quiet: true
+      that: '{{ item.query == item.response }}'
+    loop:
+      - query: '{{ lookup("dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+        response: '{{ ansible_hostname }}.example.net.'
+      - query: '{{ lookup("dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+        response: 'hostmaster.example.net.'
+      - query: '{{ lookup("dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+        response: '{{ ansible_hostname }}.example.net.'
+      - query: '{{ lookup("dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+        response: 'hostmaster.example.net.'
+      - query: '{{ lookup("dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+        response: '{{ ansible_hostname }}.example.com.'
+      - query: '{{ lookup("dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+        response: 'hostmaster.example.com.'
+      - query: '{{ lookup("dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+        response: '{{ ansible_hostname }}.example.com.'
+      - query: '{{ lookup("dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+        response: 'hostmaster.example.com.'
