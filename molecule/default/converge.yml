@@ -42,7 +42,7 @@
           # 'AAAA' record
           - name: '@'
             type: AAAA
-            target: '2606:2800:220:1:248:1893:25c8:1946'
+            target: 'fd51:e834:ec16:bbef:248:1893:25c8:1946'
           # 'CNAME' record
           - name: www
             type: CNAME
