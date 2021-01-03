@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # ganto.gdnsd documentation build configuration file
-# Copyright (C) 2016-2020 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+# Copyright (C) 2016-2021 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
@@ -51,7 +51,7 @@ master_doc = 'index'
 # General information about the project.
 project = u'ganto.gdnsd'
 author = u'Reto Gantenbein'
-copyright = u'2016-2020, {}'.format(author)
+copyright = u'2016-2021, {}'.format(author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
