@@ -8,7 +8,7 @@
 {% set _ = _zone_data.update({'domain': (gdnsd__include_zone.domain|d(ansible_domain)).rstrip('.')}) %}
 {% set _ = _zone_data.update({'reverse_zone': (gdnsd__include_zone.reverse_zone|d(gdnsd__default_reverse_zone)).rstrip('.')}) %}
 {% set _ = _zone_data.update({'mname': gdnsd__include_zone.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
-{% set _ = _zone_data.update({'rname': (gdnsd__include_zone.mailbox|d(gdnsd__mailbox)) + ('' if (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
+{% set _ = _zone_data.update({'rname': (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_replace('@', '.')) + ('' if (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
 {% set _ = _zone_data.update({'refresh': gdnsd__include_zone.refresh|d(gdnsd__refresh)}) %}
 {% set _ = _zone_data.update({'retry': gdnsd__include_zone.retry|d(gdnsd__retry)}) %}
 {% set _ = _zone_data.update({'expire': gdnsd__include_zone.expire|d(gdnsd__expire)}) %}
