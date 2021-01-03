@@ -61,6 +61,14 @@
           - name: ansible
             type: TXT
             target: 'tested-by=molecule'
+          # 'CAA' records
+          - name: '@'
+            type: CAA
+            target: 'iodef "mailto:hostmaster@example.com"'
+          - name: '@'
+            type: CAA
+            flag: 0
+            target: 'issue "letsencrypt.org"'
 
   roles:
     - role: ganto.gdnsd

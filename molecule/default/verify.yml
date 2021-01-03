@@ -76,6 +76,9 @@
         response: '0 100 389 {{ ansible_hostname }}.example.com.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
         response: 'tested-by=molecule'
+        # dig doesn't natively support CAA records therefore we have to pass the raw RR type (257)
+      - query: '{{ lookup("dig", "example.com.", "qtype=type257", "@" + ansible_default_ipv4.address, wantlist=True) }}'
+        response: ['0 iodef "mailto:hostmaster@example.com"', '0 issue "letsencrypt.org"']
       - query: '{{ lookup("dig", "192.168.200.1", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
         response: '{{ ansible_hostname }}.example.com.'
       - query: '{{ lookup("dig", "192.168.200.2", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
