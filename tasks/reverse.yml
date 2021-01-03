@@ -1,0 +1,22 @@
+---
+
+- name: Set reverse zone name fact
+  set_fact:
+    gdnsd__fact_reverse_zone: '{{ gdnsd__include_zone.reverse_zone
+                                  if "reverse_zone" in gdnsd__include_zone.keys()
+                                  else gdnsd__default_reverse_zone }}'
+    gdnsd__fact_zone_type: 'reverse'
+
+- name: '{{ gdnsd__fact_reverse_zone }} - Read existing reverse zone file hash'
+  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__fact_reverse_zone }} || true'
+  changed_when: False
+  check_mode: no
+  register: gdnsd__register_zone_hash
+
+- name: '{{ gdnsd__fact_reverse_zone }} - Generate reverse zone file'
+  template:
+    src: 'zone.j2'
+    dest: '/etc/gdnsd/zones/{{ gdnsd__fact_reverse_zone }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

@@ -95,6 +95,14 @@ gdnsd__auto_reverse_zone: True
 
 # .. envvar:: gdnsd__default_reverse_zone:
 #
-# Default reverse zone. This value is used if a zone entry has defined
-# ``auto_reverse_zone: True`` but doesn't specify the ``reverse_zone``.
-gdnsd__default_reverse_zone: '{{ ansible_default_ipv4.address.split(".")[:3] | reverse | join(".") }}.in-addr.arpa'
+# Default reverse zone (e.g. 1.168.192.in-addr.arpa).
+#
+# This value is used if a zone entry has defined ``auto_reverse_zone: True``
+# but doesn't specify the ``reverse_zone``.
+#
+# The :file:`default_reverse_zone.j2` lookup template will generate the zone
+# name based on the subnet mask of the default IPv4 address of the host. A
+# class 'C' subnet mask will result in three IP address octets prefixing the
+# ``in-addr.arpa`` domain, a class 'B' subnet in two octets and a class 'A'
+# in one octet.
+gdnsd__default_reverse_zone: '{{ lookup("template", "lookup/default_reverse_zone.j2") | trim }}'

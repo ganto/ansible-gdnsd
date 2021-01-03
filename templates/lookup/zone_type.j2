@@ -1,0 +1,17 @@
+{#
+ #  Analyze the type of records in the zone and return the type of the zone:
+ #
+ #    forward   If the zone doesn't contain PTR records
+ #    reverse   If the zone only contains PTR records
+ #    mixed     If the zone contains PTR and other records
+ #}
+{% set _record_types = gdnsd__include_zone.records|d([]) | map(attribute='type', default='A') | list | unique %}
+{% if (_record_types | length == 1) and (_record_types[0] == 'PTR') %}
+reverse
+{% else %}
+{%   if 'PTR' in _record_types %}
+mixed
+{%-   else %}
+forward
+{%   endif %}
+{% endif %}

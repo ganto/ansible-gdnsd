@@ -8,35 +8,59 @@
     gdnsd__zones:
       # domain without records
       - domain: example.net
-        auto_reverse_zone: False
+      # reverse only domain
+      - reverse_zone: '42.10.in-addr.arpa'
+        mailbox: 'hostmaster@example.net'
+        nameservers:
+          - '{{ ansible_hostname }}.example.net'
+        primary_nameserver: '{{ ansible_hostname }}.example.net'
+        records:
+          - name: '10.0'
+            type: PTR
+            target: '{{ ansible_hostname }}.example.net.'
+      # regular domain
       - domain: example.com
+        reverse_zone: '200.168.192.in-addr.arpa'
         records:
           # 'A' record
           - name: '{{ ansible_hostname }}'
-            target: '{{ ansible_default_ipv4.address }}'
-          # 'AAAA' record
-          - name: '@'
-            type: AAAA
-            target: '2606:2800:220:1:248:1893:25c8:1946'
+            target: 192.168.200.1
+          # 'A' record without reverse entry
+          - name: noreverse
+            target: 192.168.200.2
             do_reverse: false
           # 'A' record of domain '@'
           - name: '@'
-            target: '{{ ansible_default_ipv4.address }}'
-            do_reverse: false
+            target: 192.168.200.3
+          # 'A' record with subdomain
+          - name: app.test
+            type: A
+            target: 192.168.200.4
           # 'A' record of wildcard domain
           - name: '*.apps'
-            target: '{{ ansible_default_ipv4.address }}'
+            target: 192.168.200.5
+          # 'AAAA' record
+          - name: '@'
+            type: AAAA
+            target: 'fd51:e834:ec16:bbef:248:1893:25c8:1946'
           # 'CNAME' record
           - name: www
             type: CNAME
             target: example.com
+          # 'MX' record
+          - type: MX
+            target: '{{ ansible_hostname }}.example.com'
+          # 'SRV' record
+          - name: _ldap._tcp
+            type: SRV
+            port: 389
+            preference: 0
+            weight: 100
+            target: '{{ ansible_hostname }}'
           # 'TXT' record
           - name: ansible
             type: TXT
-            target: "tested-by=molecule"
-          # 'MX' record
-          - type: MX
-            target: '{{ ansible_default_ipv4.address }}'
+            target: 'tested-by=molecule'
 
   roles:
     - role: ganto.gdnsd

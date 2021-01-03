@@ -1,0 +1,125 @@
+{#
+ #  First create a dict holding the entire zone information and create a hash
+ #  from it, that it can be compared with subsequent task executions. In this
+ #  way the serial will only be updated if there are some content changes.
+ #}
+{% set _zone_data = {} %}
+{% set _ = _zone_data.update({'ttl': gdnsd__include_zone.ttl|d(gdnsd__ttl)}) %}
+{% set _ = _zone_data.update({'domain': (gdnsd__include_zone.domain|d(ansible_domain)).rstrip('.')}) %}
+{% set _ = _zone_data.update({'reverse_zone': (gdnsd__include_zone.reverse_zone|d(gdnsd__default_reverse_zone)).rstrip('.')}) %}
+{% set _ = _zone_data.update({'mname': gdnsd__include_zone.primary_nameserver|d(ansible_hostname + '.' + _zone_data['domain'])}) %}
+{% set _ = _zone_data.update({'rname': (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_replace('@', '.')) + ('' if (gdnsd__include_zone.mailbox|d(gdnsd__mailbox) | regex_search('\.')) else ('.' + _zone_data['domain']))}) %}
+{% set _ = _zone_data.update({'refresh': gdnsd__include_zone.refresh|d(gdnsd__refresh)}) %}
+{% set _ = _zone_data.update({'retry': gdnsd__include_zone.retry|d(gdnsd__retry)}) %}
+{% set _ = _zone_data.update({'expire': gdnsd__include_zone.expire|d(gdnsd__expire)}) %}
+{% set _ = _zone_data.update({'minimum': gdnsd__include_zone.negative_cache|d(gdnsd__negative_cache)}) %}
+{% set _ = _zone_data.update({'records': []}) %}
+{#
+ #  Get number of octets required for record name based on the reverse zone
+ #  name. E.g. 168.192.in-addr.arpa needs two octets of the IP address.
+ #}
+{% set _num_octets = 4 - ((_zone_data['reverse_zone'].split('.') | length) - 2) %}
+{#
+ #  Make sure there is at least one NS entry.
+ #}
+{% if gdnsd__include_zone.nameservers|d([]) %}
+{%   for _ns in gdnsd__include_zone.nameservers %}
+{%     set _ = _zone_data['records'].append({'name': '@', 'type': 'NS', 'nsdname': _ns}) %}
+{%   endfor %}
+{% else %}
+{%   set _ = _zone_data['records'].append({'name': '@', 'type': 'NS', 'nsdname': _zone_data['mname']}) %}
+{% endif %}
+{#
+ #  Add host records
+ #}
+{% if 'records' in gdnsd__include_zone %}
+{%   for _record in gdnsd__include_zone.records %}
+{%     if gdnsd__fact_zone_type == 'forward' %}
+{%       set _rr = {'type': _record.type|d('A'), 'target': _record.target} %}
+{%       for _key in [ 'name', 'port', 'preference', 'ttl', 'weight' ] %}
+{%         if _key in _record.keys() %}
+{%           set _ = _rr.update({_key: _record[_key]}) %}
+{%         endif %}
+{%       endfor %}
+{%       set _ = _zone_data['records'].append(_rr) %}
+{%     elif gdnsd__fact_zone_type == 'reverse' %}
+{%       set _record_type = _record.type|d('A') %}
+{#
+ #  Automatically generate 'PTR' record from 'A' record if `do_reverse` is not False
+ #  and it's not a wildcard record.
+ #}
+{%       if (_record_type == 'A') and ('*' not in _record.name|d('')) and (_record.do_reverse|d(True)) %}
+{%         set _rr = {'type': 'PTR', 'name': _record.target.split('.')[(-1 * _num_octets):] | reverse | join('.')} %}
+{%         if _record.name == '@' %}
+{%           set _ = _rr.update({'target': _zone_data['domain'] + '.'}) %}
+{%         else %}
+{%           set _ = _rr.update({'target': _record.name + '.' + _zone_data['domain'] + '.'}) %}
+{%         endif %}
+{%         if 'ttl' in _record.keys() %}
+{%           set _ = _rr.update({'ttl': _record.ttl}) %}
+{%         endif %}
+{%         set _ = _zone_data['records'].append(_rr) %}
+{%       elif _record_type == 'PTR' %}
+{%         set _rr = {'name': _record.name, 'type': 'PTR', 'target': _record.target} %}
+{%         if 'ttl' in _record.keys() %}
+{%           set _ = _rr.update({'ttl': _record.ttl}) %}
+{%         endif %}
+{%         set _ = _zone_data['records'].append(_rr) %}
+{%       endif %}
+{%     endif %}
+{%   endfor %}
+{% else %}
+{#
+ #  If no host records are defined add at least the name server as A record in
+ #  the forward zone and as PTR record in the reverse zone.
+ #}
+{%   if gdnsd__fact_zone_type == 'forward' %}
+{%     set _ = _zone_data['records'].append({'name': ansible_hostname, 'type': 'A', 'target': ansible_default_ipv4.address}) %}
+{%   elif gdnsd__fact_zone_type == 'reverse' %}
+{%     set _ = _zone_data['records'].append({'name': ansible_default_ipv4.address.split('.')[(-1 * _num_octets):] | reverse | join('.'), 'type': 'PTR', 'target': ansible_hostname + '.' + _zone_data['domain'] + '.'}) %}
+{%   endif %}
+{% endif %}
+{#
+ #  Compare the zone file hash with the current zone data hash and set serial
+ #  accordingly
+ #}
+{% set _zone = {'hash': _zone_data | string | hash('md5')} %}
+{% if gdnsd__register_zone_hash.stdout | length > 0 %}
+{%   set _hash_serial = gdnsd__register_zone_hash.stdout.split(' ')[2:] %}
+{#
+ #   If the hash hasn't change since the last update also re-use the existing serial
+ #}
+{%   if _hash_serial and _hash_serial[0] == _zone['hash'] %}
+{%     set _ = _zone.update({'serial': _hash_serial[1]}) %}
+{%   endif %}
+{% endif %}
+{% if 'serial' not in _zone.keys() %}
+{%   set _ = _zone.update({'serial': gdnsd__fact_zone_serial}) %}
+{% endif %}
+{#
+ #  Eventually output the zone data
+ #}
+; Hash: {{ _zone['hash'] }} {{ _zone['serial'] }}
+
+$TTL {{ _zone_data['ttl'] }}
+
+{% if gdnsd__fact_zone_type == 'forward' -%}
+{{ _zone_data['domain'] }}
+{%- elif gdnsd__fact_zone_type == 'reverse' -%}
+{{ _zone_data['reverse_zone'] }}
+{%- endif -%}
+. IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
+
+{% for _record in _zone_data['records'] %}
+{%   if (_record['type'] in ['A', 'AAAA', 'PTR', 'TXT']) %}
+{{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}
+{%   elif _record['type'] == 'CNAME' %}
+{{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}{{ '.' if (_record['target'] | regex_search('\.')) else '' }}
+{%   elif _record['type'] == 'MX' %}
+@ {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['preference']|d(5) }} {{ _record['target'] }}{{ '.' if (_record['target'] | regex_search('\.')) else '' }}
+{%   elif _record['type'] == 'NS' %}
+{{     _record['name'] }} IN {{ _record['type'] }} {{ _record['nsdname'] }}{{ '.' if (_record['nsdname'] | regex_search('\.')) else '' }}
+{%   elif _record['type'] == 'SRV' %}
+{{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['preference']|d(5) }} {{ _record['weight']|d(0) }} {{ _record['port'] }} {{ _record['target'] }}{{ '.' if (_record['target'] | regex_search('\.')) else '' }}
+{%   endif %}
+{% endfor %}
