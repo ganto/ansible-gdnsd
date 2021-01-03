@@ -8,43 +8,52 @@
     gdnsd__zones:
       # domain without records
       - domain: example.net
+      # reverse only domain
+      - reverse_zone: '42.10.in-addr.arpa'
+        mailbox: 'hostmaster@example.net'
+        nameservers:
+          - '{{ ansible_hostname }}.example.net'
+        primary_nameserver: '{{ ansible_hostname }}.example.net'
+        records:
+          - name: '10.0'
+            type: PTR
+            target: '{{ ansible_hostname }}.example.net.'
+      # regular domain
       - domain: example.com
-        auto_reverse_zone: False
+        reverse_zone: '200.168.192.in-addr.arpa'
         records:
           # 'A' record
           - name: '{{ ansible_hostname }}'
-            target: '{{ ansible_default_ipv4.address }}'
+            target: 192.168.200.1
+          # 'A' record without reverse entry
+          - name: noreverse
+            target: 192.168.200.2
+            do_reverse: false
+          # 'A' record of domain '@'
+          - name: '@'
+            target: 192.168.200.3
+          # 'A' record with subdomain
+          - name: app.test
+            type: A
+            target: 192.168.200.4
+          # 'A' record of wildcard domain
+          - name: '*.apps'
+            target: 192.168.200.5
           # 'AAAA' record
           - name: '@'
             type: AAAA
             target: '2606:2800:220:1:248:1893:25c8:1946'
-          # 'A' record of domain '@'
-          - name: '@'
-            target: '{{ ansible_default_ipv4.address }}'
-          # 'A' record of wildcard domain
-          - name: '*.apps'
-            target: '{{ ansible_default_ipv4.address }}'
           # 'CNAME' record
           - name: www
             type: CNAME
             target: example.com
+          # 'MX' record
+          - type: MX
+            target: '{{ ansible_hostname }}.example.com'
           # 'TXT' record
           - name: ansible
             type: TXT
-            target: "tested-by=molecule"
-          # 'MX' record
-          - type: MX
-            target: '{{ ansible_default_ipv4.address }}'
-      # reverse only domain
-      - reverse_zone: '42.10.in-addr.arpa'
-        mailbox: 'hostmaster@example.com'
-        nameservers:
-          - '{{ ansible_hostname }}.example.com'
-        primary_nameserver: '{{ ansible_hostname }}.example.com'
-        records:
-          - name: '10.0'
-            type: PTR
-            target: '{{ ansible_hostname }}.example.com.'
+            target: 'tested-by=molecule'
 
   roles:
     - role: ganto.gdnsd

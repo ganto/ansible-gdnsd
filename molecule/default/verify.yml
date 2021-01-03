@@ -37,28 +37,54 @@
       - query: '{{ lookup("dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
         response: '{{ ansible_hostname }}.example.net.'
 
+  - name: Check 42.10.in-addr.arpa DNS records
+    assert:
+      quiet: true
+      that: '{{ item.query == item.response }}'
+    loop:
+      - query: '{{ lookup("dig", "42.10.in-addr.arpa.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.net.'
+      - query: '{{ lookup("dig", "10.42.0.10", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.net.'
+
   - name: Check example.com DNS records
     assert:
       quiet: true
       that: '{{ item.query == item.response }}'
     loop:
-      - query: '{{ lookup("dig", "example.com.", "qtype=NS", "@" + ansible_default_ipv4.address, wantlist=True) }}'
-        response: '{{ [ ansible_hostname + ".example.com." ] }}'
+      - query: '{{ lookup("dig", "example.com.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+        response: '{{ ansible_hostname }}.example.com.'
+      - query: '{{ lookup("dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '192.168.200.1'
+      - query: '{{ lookup("dig", "noreverse.example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '192.168.200.2'
       - query: '{{ lookup("dig", "example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_default_ipv4.address }}'
+        response: '192.168.200.3'
+      - query: '{{ lookup("dig", "app.test.example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '192.168.200.4'
+      - query: '{{ lookup("dig", "test.apps.example.com.", "@" + ansible_default_ipv4.address) }}'
+        response: '192.168.200.5'
+      - query: '{{ lookup("dig", lookup("password", "/dev/null chars=ascii_lowercase length=8") + ".apps.example.com", "@" + ansible_default_ipv4.address) }}'
+        response: '192.168.200.5'
       - query: '{{ lookup("dig", "example.com.", "qtype=AAAA", "@" + ansible_default_ipv4.address) }}'
         #response: '2606:2800:220:1:248:1893:25c8:1946'
         # TODO: AAAA records seem not to be supported yet
         response: ''
       - query: '{{ lookup("dig", "www.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_default_ipv4.address }}'
-      - query: '{{ lookup("dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address, wantlist=True) }}'
-        response: '{{ [ ansible_default_ipv4.address ] }}'
-      - query: '{{ lookup("dig", "test.apps.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_default_ipv4.address }}'
+        response: '192.168.200.3'
       - query: '{{ lookup("dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
-        response: '5 {{ ansible_default_ipv4.address }}.'
+        response: '5 {{ ansible_hostname }}.example.com.'
       - query: '{{ lookup("dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
         response: 'tested-by=molecule'
-      - query: '{{ lookup("dig", "10.42.0.10", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+      - query: '{{ lookup("dig", "192.168.200.1", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
         response: '{{ ansible_hostname }}.example.com.'
+      - query: '{{ lookup("dig", "192.168.200.2", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        # set 'do_reverse: false'
+        response: 'NXDOMAIN'
+      - query: '{{ lookup("dig", "192.168.200.3", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: 'example.com.'
+      - query: '{{ lookup("dig", "192.168.200.4", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        response: 'app.test.example.com.'
+      - query: '{{ lookup("dig", "192.168.200.5", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+        # no PTR record for wildcard domain
+        response: 'NXDOMAIN'
