@@ -111,7 +111,7 @@ $TTL {{ _zone_data['ttl'] }}
 . IN SOA {{ _zone_data['mname'] }}. {{ _zone_data['rname'] }}. ( {{ _zone['serial'] }} {{ _zone_data['refresh'] }} {{ _zone_data['retry'] }} {{ _zone_data['expire'] }} {{ _zone_data['minimum'] }} )
 
 {% for _record in _zone_data['records'] %}
-{%   if (_record['type'] in ['A', 'PTR', 'TXT']) %}
+{%   if (_record['type'] in ['A', 'AAAA', 'PTR', 'TXT']) %}
 {{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}
 {%   elif _record['type'] == 'CNAME' %}
 {{     _record['name'] }} {{ _record['ttl']|d('') }} IN {{ _record['type'] }} {{ _record['target'] }}{{ '.' if (_record['target'] | regex_search('\.')) else '' }}

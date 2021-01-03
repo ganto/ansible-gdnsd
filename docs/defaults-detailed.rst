@@ -73,8 +73,8 @@ YAML dictionary with the following parameters:
     record type, this is e.g. a host name.
 
   ``type``
-    Optional. Record type. Supported are ``A``, ``CNAME``, ``MX``, ``SRV`` and
-    ``TXT``. Defaults to ``A`` record.
+    Optional. Record type. Supported are ``A``, ``AAAA``, ``CNAME``, ``MX``,
+    ``SRV`` and ``TXT``. Defaults to ``A`` record.
 
   ``do_reverse``
     Optional. If ``item.type`` is ``A``, add a reverse zone entry for this
