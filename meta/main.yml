@@ -1,4 +1,7 @@
 ---
+# Copyright (C) 2018-2020 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
 galaxy_info:
   role_name: gdnsd
   description: Install and manage gdnsd, an authoritative-only DNS server

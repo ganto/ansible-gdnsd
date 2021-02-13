@@ -32,11 +32,13 @@ It can be built locally from the [docs](docs/) directory by running:
 cd docs && make html
 ```
 
+### License
+
+[GPL-3.0](https://spdx.org/licenses/GPL-3.0-or-later.html) or some later version
+
 
 ### Author
 
 The content of this repository was written by:
 
 - [Reto Gantenbein](https://linuxmonk.ch/) | [e-mail](mailto:reto.gantenbein@linuxmonk.ch) | [GitHub](https://github.com/ganto)
-
-License: [GPLv3](https://tldrlegal.com/license/gnu-general-public-license-v3-%28gpl-3%29)

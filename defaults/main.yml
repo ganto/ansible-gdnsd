@@ -1,5 +1,6 @@
 ---
-# .. vim: foldmarker=[[[,]]]:foldmethod=marker
+# Copyright (C) 2016-2021 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 # Default variables
 # =================
