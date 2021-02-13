@@ -1,0 +1,98 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+
+defaults:
+  run:
+    working-directory: 'ganto.gdnsd'
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'ganto.gdnsd'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint ansible-lint[community]
+
+      - name: Add checkout to Ansible role path.
+        run: |
+          mkdir -p ~/.ansible/roles
+          ln -s $(pwd) ~/.ansible/roles/
+        shell: bash
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          ansible-lint
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        distro:
+          - 'debian9'
+          - 'debian10'
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'ganto.gdnsd'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install -r molecule/default/requirements.txt
+
+      - name: Run Molecule tests.
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+
+  documentation:
+    name: Documentation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install documentation dependencies.
+        run: pip3 install -r requirements.txt
+        working-directory: docs
+
+      - name: Run linkcheck.
+        run: make linkcheck
+        working-directory: docs
+
+      - name: Build HTML documentation.
+        run: make html
+        working-directory: docs
