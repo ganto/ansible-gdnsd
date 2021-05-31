@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 galaxy_info:
+  namespace: ganto
   role_name: gdnsd
   description: Install and manage gdnsd, an authoritative-only DNS server
   author: Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
