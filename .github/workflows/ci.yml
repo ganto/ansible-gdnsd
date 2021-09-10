@@ -45,8 +45,8 @@ jobs:
     strategy:
       matrix:
         distro:
-          - 'debian9'
           - 'debian10'
+          - 'debian11'
 
     steps:
       - name: Check out the codebase.
