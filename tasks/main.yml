@@ -3,12 +3,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Install gdnsd packages
-  apt:
+  ansible.builtin.apt:
     name: '{{ gdnsd__packages }}'
     state: present
 
 - name: gdnsd configuration
-  template:
+  ansible.builtin.template:
     src: 'etc/gdnsd/config.j2'
     dest: '/etc/gdnsd/config'
     owner: 'root'
@@ -18,12 +18,12 @@
     - Restart gdnsd
 
 - name: Generate serial
-  set_fact:
+  ansible.builtin.set_fact:
     gdnsd__fact_zone_serial: '{{ ansible_date_time.epoch }}'
   run_once: True
 
 - name: Include tasks for generating zone file
-  include_tasks: zone.yml
+  ansible.builtin.include_tasks: zone.yml
   loop: '{{ gdnsd__zones
             if (gdnsd__zones | length) > 0
             else [ {"domain": ansible_domain,
@@ -35,14 +35,14 @@
     loop_var: gdnsd__include_zone
 
 - name: Check configuration and zone files
-  command: gdnsd -s checkconf  # noqa 301
+  ansible.builtin.command: gdnsd -s checkconf  # noqa 301
   check_mode: no
   changed_when: False
   failed_when: False
   register: gdnsd__register_checkconf
 
 - name: Show checkconf output
-  debug:
+  ansible.builtin.debug:
     msg: '{{ gdnsd__register_checkconf.stdout_lines +
              gdnsd__register_checkconf.stderr_lines }}'
   failed_when:
@@ -50,7 +50,7 @@
     - not ansible_check_mode
 
 - name: Enable and start service
-  service:
+  ansible.builtin.service:
     name: 'gdnsd'
     enabled: True
     state: started

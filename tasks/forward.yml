@@ -3,13 +3,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: '{{ gdnsd__include_zone.domain }} - Read existing forward zone file hash'
-  shell: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__include_zone.domain }} || true'
+  ansible.builtin.shell:
+    cmd: 'grep "^; Hash:" /etc/gdnsd/zones/{{ gdnsd__include_zone.domain }} || true'
   changed_when: False
   check_mode: no
   register: gdnsd__register_zone_hash
 
 - name: '{{ gdnsd__include_zone.domain }} - Generate forward zone file'
-  template:
+  ansible.builtin.template:
     src: 'zone.j2'
     dest: '/etc/gdnsd/zones/{{ gdnsd__include_zone.domain }}'
     owner: 'root'

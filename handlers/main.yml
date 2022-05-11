@@ -3,6 +3,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Restart gdnsd
-  service:
+  ansible.builtin.service:
     name: 'gdnsd'
     state: restarted
