@@ -3,19 +3,19 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 - name: Set zone type fact
-  set_fact:
+  ansible.builtin.set_fact:
     gdnsd__fact_zone_type: '{{ lookup("template", "lookup/zone_type.j2") | trim }}'
 
 - name: Fail on invalid zone records
-  fail:
+  ansible.builtin.fail:
     msg: 'Zone definition cannot mix PTR and other records'
   when: gdnsd__fact_zone_type not in ['forward', 'reverse']
 
 - name: Include tasks to manage forward zone file
-  include_tasks: forward.yml
+  ansible.builtin.include_tasks: forward.yml
   when: gdnsd__fact_zone_type == 'forward'
 
 - name: Include tasks to manage reverse zone file
-  include_tasks: reverse.yml
+  ansible.builtin.include_tasks: reverse.yml
   when: (gdnsd__fact_zone_type == 'reverse') or
         (gdnsd__include_zone['auto_reverse_zone']|d(gdnsd__auto_reverse_zone))
