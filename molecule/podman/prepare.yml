@@ -6,30 +6,6 @@
   hosts: all
 
   tasks:
-    # Enable backports to have at least gdnsd-2.3.0 (CAA support)
-    - name: Enable Debian stretch-backports repository
-      ansible.builtin.lineinfile:
-        path: /etc/apt/sources.list
-        regexp: '^(.*)stretch-backports(.*)$'
-        line: 'deb http://deb.debian.org/debian stretch-backports main'
-      when:
-        - ansible_distribution == 'Debian'
-        - ansible_distribution_release == 'stretch'
-
-    - name: Use gdnsd from stretch-backports
-      ansible.builtin.copy:
-        content: |
-          Package: gdnsd
-          Pin: release a=stretch-backports
-          Pin-Priority: 500
-        dest: /etc/apt/preferences.d/gdnsd.pref
-        owner: root
-        group: root
-        mode: '0644'
-      when:
-        - ansible_distribution == 'Debian'
-        - ansible_distribution_release == 'stretch'
-
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: yes
