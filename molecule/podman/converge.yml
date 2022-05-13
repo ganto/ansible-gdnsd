@@ -73,5 +73,13 @@
             flag: 0
             target: 'issue "letsencrypt.org"'
 
+  pre_tasks:
+    - name: Ensure backwards compatibility of >= gdnsd-3.4
+      ansible.builtin.include_vars:
+        file: vars/gdnsd-3.4.yml
+      when:
+        - ansible_os_family == 'Debian'
+        - ansible_distribution_version != "10"
+
   roles:
     - role: ganto.gdnsd

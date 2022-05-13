@@ -1,0 +1,9 @@
+---
+# Copyright (C) 2022 Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+gdnsd__options:
+  # Change introduced in gdnsd-3.4 available in Bullseye and later:
+  # Ensure queries return all records in case a CNAME records point to
+  # another record in the same zone (used for testing CNAME)
+  experimental_no_chain: 'false'
