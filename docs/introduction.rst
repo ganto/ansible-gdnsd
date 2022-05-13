@@ -22,7 +22,7 @@ This Ansible role can currently only be used on Debian- and Ubuntu-based
 distribution that have the `gdnsd package <https://tracker.debian.org/pkg/gdnsd>`_
 available in their repositories.
 
-To run the role at least Ansible ``v2.7.0`` is required.
+To run the role at least Ansible ``v2.8.0`` is required.
 
 
 .. _gdnsd_installation:

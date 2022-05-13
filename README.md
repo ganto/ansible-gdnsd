@@ -16,7 +16,7 @@ properly increase the serial on zone updates.
 
 ### Installation
 
-This role requires at least Ansible `v2.7.0`. To install it run:
+This role requires at least Ansible `v2.8.0`. To install it run:
 
 ```Shell
 ansible-galaxy install ganto.gdnsd
