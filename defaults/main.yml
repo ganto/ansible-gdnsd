@@ -39,6 +39,13 @@ gdnsd__packages: '{{ gdnsd__default_packages | union(gdnsd__custom_packages) }}'
 gdnsd__listen: []
 
 
+# .. envvar:: gdnsd__options
+#
+# Dictionary of configuration options. See :man:`gdnsd.config(5)` for a
+# description of the possible configuration parameters.
+gdnsd__options: {}
+
+
 # ----------------------
 #   Zone configuration
 # ----------------------
