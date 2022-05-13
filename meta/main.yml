@@ -9,21 +9,18 @@ galaxy_info:
   author: Reto Gantenbein <reto.gantenbein@linuxmonk.ch>
   license: GPL-3.0
 
-  min_ansible_version: 2.7
+  min_ansible_version: 2.8
 
   platforms:
     - name: Debian
       versions:
-        - jessie
         - stretch
         - buster
         - bullseye
     - name: Ubuntu
       versions:
-        - xenial
         - bionic
         - focal
-        - groovy
 
   galaxy_tags:
     - gdnsd
