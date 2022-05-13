@@ -4,8 +4,11 @@
  #}
 # {{ ansible_managed }}
 
-{% if gdnsd__listen|d([]) %}
+{% if gdnsd__options|d({}) or gdnsd__listen|d([]) %}
 options => {
+{%   for _key, _value in gdnsd__options.items() %}
+     {{ _key }} => {{ _value }}
+{%   endfor %}
 {%   if gdnsd__listen|d([]) %}
     listen => [ {{ gdnsd__listen | join(" ") }} ]
 {%   endif %}
