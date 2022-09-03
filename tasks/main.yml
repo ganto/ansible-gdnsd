@@ -7,7 +7,7 @@
     name: '{{ gdnsd__packages }}'
     state: present
 
-- name: gdnsd configuration
+- name: gdnsd configuration  # noqa name[casing]
   ansible.builtin.template:
     src: 'etc/gdnsd/config.j2'
     dest: '/etc/gdnsd/config'
@@ -35,7 +35,7 @@
     loop_var: gdnsd__include_zone
 
 - name: Check configuration and zone files
-  ansible.builtin.command: gdnsd -s checkconf  # noqa 301
+  ansible.builtin.command: gdnsd -s checkconf  # noqa no-changed-when
   check_mode: no
   changed_when: False
   failed_when: False
