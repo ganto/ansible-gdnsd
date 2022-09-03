@@ -7,7 +7,7 @@
     name: '{{ gdnsd__packages }}'
     state: present
 
-- name: gdnsd configuration
+- name: gdnsd configuration  # noqa name[casing]
   ansible.builtin.template:
     src: 'etc/gdnsd/config.j2'
     dest: '/etc/gdnsd/config'
