@@ -66,10 +66,10 @@ jobs:
           python-version: '3.x'
 
       - name: Install test dependencies.
-        run: pip3 install -r molecule/default/requirements.txt
+        run: pip3 install -r molecule/docker/requirements.txt
 
       - name: Run Molecule tests.
-        run: molecule test
+        run: molecule test -s docker
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'

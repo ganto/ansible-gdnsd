@@ -41,7 +41,7 @@ There is a [Molecule](https://molecule.readthedocs.io/) test profile that can be
 
 1. Ensure you have the necessary dependencies installed (e.g. in a Python [venv](https://docs.python.org/3/tutorial/venv.html)):
 ```
-pip install -r molecule/default/requirements.txt        # for podman
+pip install -r molecule/podman/requirements.txt         # for podman
 # or
 pip install -r molecule/docker/requirements.txt         # for docker
 ```
