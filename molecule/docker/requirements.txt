@@ -1,4 +1,5 @@
 ansible
 dnspython
 docker
-molecule[docker]
+molecule
+molecule-plugins[docker]
