@@ -1,3 +1,4 @@
 ansible
 dnspython
-molecule[podman]
+molecule
+molecule-plugins[podman]
