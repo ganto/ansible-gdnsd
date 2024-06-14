@@ -17,7 +17,7 @@
 # .. envvar:: gdnsd__default_packages
 #
 # List of packages to install by default.
-gdnsd__default_packages: [ 'gdnsd' ]
+gdnsd__default_packages: ['gdnsd']
 
 
 # .. envvar:: gdnsd__custom_packages
