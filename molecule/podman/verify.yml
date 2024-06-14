@@ -6,111 +6,111 @@
   hosts: all
 
   tasks:
-  - name: Gathering service facts
-    ansible.builtin.service_facts:
+    - name: Gathering service facts
+      ansible.builtin.service_facts:
 
-  - name: Ensure gdnsd service is enabled
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ ansible_facts.services["gdnsd.service"]["status"] == "enabled" }}'
+    - name: Ensure gdnsd service is enabled
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ ansible_facts.services["gdnsd.service"]["status"] == "enabled" }}'
 
-  - name: Ensure gdnsd service is running
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ ansible_facts.services["gdnsd.service"]["state"] == "running" }}'
+    - name: Ensure gdnsd service is running
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ ansible_facts.services["gdnsd.service"]["state"] == "running" }}'
 
-  - name: Ensure a service is listening on port 53
-    ansible.builtin.wait_for:
-      port: 53
-      connect_timeout: 2
+    - name: Ensure a service is listening on port 53
+      ansible.builtin.wait_for:
+        port: 53
+        connect_timeout: 2
 
-  - name: Check example.net DNS records
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ item.query == item.response }}'
-    loop:
-      # A domain with no records defined should have at least an 'NS' and an
-      # 'A' record definend of the host itself
-      - query: '{{ lookup("community.general.dig", "example.net.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.net.'
-      - query: '{{ lookup("community.general.dig", ansible_hostname + ".example.net.", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_default_ipv4.address }}'
-      - query: '{{ lookup("community.general.dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.net.'
+    - name: Check example.net DNS records
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ item.query == item.response }}'
+      loop:
+        # A domain with no records defined should have at least an 'NS' and an
+        # 'A' record definend of the host itself
+        - query: '{{ lookup("community.general.dig", "example.net.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.net.'
+        - query: '{{ lookup("community.general.dig", ansible_hostname + ".example.net.", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_default_ipv4.address }}'
+        - query: '{{ lookup("community.general.dig", ansible_default_ipv4.address, "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.net.'
 
-  - name: Check 42.10.in-addr.arpa DNS records
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ item.query == item.response }}'
-    loop:
-      - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.net.'
-      - query: '{{ lookup("community.general.dig", "10.42.0.10", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.net.'
+    - name: Check 42.10.in-addr.arpa DNS records
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ item.query == item.response }}'
+      loop:
+        - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.net.'
+        - query: '{{ lookup("community.general.dig", "10.42.0.10", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.net.'
 
-  - name: Check example.com DNS records
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ item.query == item.response }}'
-    loop:
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.1'
-      - query: '{{ lookup("community.general.dig", "noreverse.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.2'
-      - query: '{{ lookup("community.general.dig", "example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.3'
-      - query: '{{ lookup("community.general.dig", "app.test.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.4'
-      - query: '{{ lookup("community.general.dig", "test.apps.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.5'
-      - query: '{{ lookup("community.general.dig", lookup("password", "/dev/null chars=ascii_lowercase length=8") + ".apps.example.com", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.5'
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=AAAA", "@" + ansible_default_ipv4.address) }}'
-        response: 'fd51:e834:ec16:bbef:248:1893:25c8:1946'
-      - query: '{{ lookup("community.general.dig", "www.example.com.", "@" + ansible_default_ipv4.address) }}'
-        response: '192.168.200.3'
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
-        response: '5 {{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", "_ldap._tcp.example.com.", "qtype=SRV", "@" + ansible_default_ipv4.address) }}'
-        response: '0 100 389 {{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
-        response: 'tested-by=molecule'
-        # dig doesn't natively support CAA records therefore we have to pass the raw RR type (257)
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=type257", "@" + ansible_default_ipv4.address, wantlist=True) }}'
-        response: ['0 iodef "mailto:hostmaster@example.com"', '0 issue "letsencrypt.org"']
-      - query: '{{ lookup("community.general.dig", "192.168.200.1", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: '{{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", "192.168.200.2", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        # set 'do_reverse: false'
-        response: 'NXDOMAIN'
-      - query: '{{ lookup("community.general.dig", "192.168.200.3", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: 'example.com.'
-      - query: '{{ lookup("community.general.dig", "192.168.200.4", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        response: 'app.test.example.com.'
-      - query: '{{ lookup("community.general.dig", "192.168.200.5", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
-        # no PTR record for wildcard domain
-        response: 'NXDOMAIN'
+    - name: Check example.com DNS records
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ item.query == item.response }}'
+      loop:
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=NS", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", ansible_hostname + ".example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.1'
+        - query: '{{ lookup("community.general.dig", "noreverse.example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.2'
+        - query: '{{ lookup("community.general.dig", "example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.3'
+        - query: '{{ lookup("community.general.dig", "app.test.example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.4'
+        - query: '{{ lookup("community.general.dig", "test.apps.example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.5'
+        - query: '{{ lookup("community.general.dig", lookup("password", "/dev/null chars=ascii_lowercase length=8") + ".apps.example.com", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.5'
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=AAAA", "@" + ansible_default_ipv4.address) }}'
+          response: 'fd51:e834:ec16:bbef:248:1893:25c8:1946'
+        - query: '{{ lookup("community.general.dig", "www.example.com.", "@" + ansible_default_ipv4.address) }}'
+          response: '192.168.200.3'
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=MX", "@" + ansible_default_ipv4.address) }}'
+          response: '5 {{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", "_ldap._tcp.example.com.", "qtype=SRV", "@" + ansible_default_ipv4.address) }}'
+          response: '0 100 389 {{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", "ansible.example.com.", "qtype=TXT", "@" + ansible_default_ipv4.address) }}'
+          response: 'tested-by=molecule'
+          # dig doesn't natively support CAA records therefore we have to pass the raw RR type (257)
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=type257", "@" + ansible_default_ipv4.address, wantlist=True) }}'
+          response: ['0 iodef "mailto:hostmaster@example.com"', '0 issue "letsencrypt.org"']
+        - query: '{{ lookup("community.general.dig", "192.168.200.1", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          response: '{{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", "192.168.200.2", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          # set 'do_reverse: false'
+          response: 'NXDOMAIN'
+        - query: '{{ lookup("community.general.dig", "192.168.200.3", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          response: 'example.com.'
+        - query: '{{ lookup("community.general.dig", "192.168.200.4", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          response: 'app.test.example.com.'
+        - query: '{{ lookup("community.general.dig", "192.168.200.5", "qtype=PTR", "@" + ansible_default_ipv4.address) }}'
+          # no PTR record for wildcard domain
+          response: 'NXDOMAIN'
 
-  - name: Check SOA records
-    ansible.builtin.assert:
-      quiet: true
-      that: '{{ item.query == item.response }}'
-    loop:
-      - query: '{{ lookup("community.general.dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
-        response: '{{ ansible_hostname }}.example.net.'
-      - query: '{{ lookup("community.general.dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
-        response: 'hostmaster.example.net.'
-      - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
-        response: '{{ ansible_hostname }}.example.net.'
-      - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
-        response: 'hostmaster.example.net.'
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
-        response: '{{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
-        response: 'hostmaster.example.com.'
-      - query: '{{ lookup("community.general.dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
-        response: '{{ ansible_hostname }}.example.com.'
-      - query: '{{ lookup("community.general.dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
-        response: 'hostmaster.example.com.'
+    - name: Check SOA records
+      ansible.builtin.assert:
+        quiet: true
+        that: '{{ item.query == item.response }}'
+      loop:
+        - query: '{{ lookup("community.general.dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+          response: '{{ ansible_hostname }}.example.net.'
+        - query: '{{ lookup("community.general.dig", "example.net.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+          response: 'hostmaster.example.net.'
+        - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+          response: '{{ ansible_hostname }}.example.net.'
+        - query: '{{ lookup("community.general.dig", "42.10.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+          response: 'hostmaster.example.net.'
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+          response: '{{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", "example.com.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+          response: 'hostmaster.example.com.'
+        - query: '{{ lookup("community.general.dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[0] }}'
+          response: '{{ ansible_hostname }}.example.com.'
+        - query: '{{ lookup("community.general.dig", "200.168.192.in-addr.arpa.", "qtype=SOA", "@" + ansible_default_ipv4.address).split(" ")[1] }}'
+          response: 'hostmaster.example.com.'
