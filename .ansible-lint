@@ -1,3 +1,4 @@
 warn_list:
   - name[template]
   - var-spacing
+  - yaml[line-length]
