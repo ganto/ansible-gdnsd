@@ -1,6 +1,6 @@
 ## Ansible Role: ganto.gdnsd
 
-[![CI](https://github.com/ganto/ansible-gdnsd/workflows/CI/badge.svg?event=push)](https://github.com/ganto/ansible-gdnsd/actions?query=workflow%3ACI)
+[![CI](https://github.com/ganto/ansible-gdnsd/actions/workflows/ci.yml/badge.svg)](https://github.com/ganto/ansible-gdnsd/actions/workflows/ci.yml)
 [![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-ganto.gdnsd-blue.svg?style=flat&logo=ansible)](https://galaxy.ansible.com/ganto/gdnsd)
 [![Read the Docs](https://img.shields.io/badge/docs-ansible--gdnsd-darkblue.svg?style=flat&logo=read-the-docs)](https://ansible-gdnsd.readthedocs.io/)
 
