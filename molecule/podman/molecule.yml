@@ -1,18 +1,34 @@
 ---
 dependency:
   name: galaxy
-  enabled: False
+  options:
+    requirements-file: molecule/podman/collections.yml
 driver:
   name: podman
 platforms:
   - name: instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-debian11}-ansible:latest"
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian11}-ansible:latest"
+    pre_build_image: True
     command: ${MOLECULE_DOCKER_COMMAND:-""}
+    privileged: True
+    cgroupns_mode: host
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    privileged: true
-    pre_build_image: true
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
 provisioner:
   name: ansible
+  log: True
+  options:
+    vvv: True
   playbooks:
     converge: ${MOLECULE_PLAYBOOK:-converge.yml}
+scenario:
+  test_sequence:
+    - dependency
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - cleanup
+    - destroy
