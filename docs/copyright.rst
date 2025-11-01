@@ -1,6 +1,6 @@
 Copyright
 =========
 
-2016-2021 Reto Gantenbein
+2016-2025 Reto Gantenbein
 
 .. literalinclude:: ../LICENSE

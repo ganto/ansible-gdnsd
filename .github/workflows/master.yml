@@ -28,13 +28,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the codebase.
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: 'ganto.gdnsd'
 
       - name: Set up Python 3.
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
+          # stay with Python 3.13 until ansible-core 2.20 is released
           python-version: '3.13'
 
       - name: Install Ansible.
