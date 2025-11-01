@@ -67,7 +67,7 @@ molecule destroy [-s docker]
 
 ### License
 
-[GPL-3.0](https://spdx.org/licenses/GPL-3.0-or-later.html) or some later version
+[LGPL-3.0](https://spdx.org/licenses/LGPL-3.0-or-later.html) or some later version
 
 ### Author
 
