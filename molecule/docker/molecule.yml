@@ -15,6 +15,9 @@ platforms:
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     privileged: True
     cgroupns_mode: host
+    published_ports:
+      - "127.0.0.1:${MOLECULE_DNS_PORT:-5553}:53/tcp"
+      - "127.0.0.1:${MOLECULE_DNS_PORT:-5553}:53/udp"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
 provisioner:
